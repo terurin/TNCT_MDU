@@ -1,0 +1,351 @@
+/*******************************************************************************
+  System Initialization File
+
+  File Name:
+    system_init.c
+
+  Summary:
+    This file contains source code necessary to initialize the system.
+
+  Description:
+    This file contains source code necessary to initialize the system.  It
+    implements the "SYS_Initialize" function, defines the configuration bits, 
+    and allocates any necessary global system resources, such as the 
+    sysObj structure that contains the object handles to all the MPLAB Harmony 
+    module objects in the system.
+ *******************************************************************************/
+
+// DOM-IGNORE-BEGIN
+/*******************************************************************************
+Copyright (c) 2013-2015 released Microchip Technology Inc.  All rights reserved.
+
+Microchip licenses to you the right to use, modify, copy and distribute
+Software only when embedded on a Microchip microcontroller or digital signal
+controller that is integrated into your product or third party product
+(pursuant to the sublicense terms in the accompanying license agreement).
+
+You should refer to the license agreement accompanying this Software for
+additional information regarding your rights and obligations.
+
+SOFTWARE AND DOCUMENTATION ARE PROVIDED AS IS WITHOUT WARRANTY OF ANY KIND,
+EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF
+MERCHANTABILITY, TITLE, NON-INFRINGEMENT AND FITNESS FOR A PARTICULAR PURPOSE.
+IN NO EVENT SHALL MICROCHIP OR ITS LICENSORS BE LIABLE OR OBLIGATED UNDER
+CONTRACT, NEGLIGENCE, STRICT LIABILITY, CONTRIBUTION, BREACH OF WARRANTY, OR
+OTHER LEGAL EQUITABLE THEORY ANY DIRECT OR INDIRECT DAMAGES OR EXPENSES
+INCLUDING BUT NOT LIMITED TO ANY INCIDENTAL, SPECIAL, INDIRECT, PUNITIVE OR
+CONSEQUENTIAL DAMAGES, LOST PROFITS OR LOST DATA, COST OF PROCUREMENT OF
+SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
+(INCLUDING BUT NOT LIMITED TO ANY DEFENSE THEREOF), OR OTHER SIMILAR COSTS.
+ *******************************************************************************/
+// DOM-IGNORE-END
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Included Files
+// *****************************************************************************
+// *****************************************************************************
+
+#include "system_config.h"
+#include "system_definitions.h"
+
+
+// ****************************************************************************
+// ****************************************************************************
+// Section: Configuration Bits
+// ****************************************************************************
+// ****************************************************************************
+// <editor-fold defaultstate="collapsed" desc="Configuration Bits">
+
+/*** DEVCFG0 ***/
+
+#pragma config DEBUG =      ON
+#pragma config JTAGEN =     OFF
+#pragma config ICESEL =     ICS_PGx3
+#pragma config PWP =        OFF
+#pragma config BWP =        OFF
+#pragma config CP =         OFF
+
+/*** DEVCFG1 ***/
+
+#pragma config FNOSC =      FRCPLL
+#pragma config FSOSCEN =    OFF
+#pragma config IESO =       ON
+#pragma config POSCMOD =    OFF
+#pragma config OSCIOFNC =   OFF
+#pragma config FPBDIV =     DIV_1
+#pragma config FCKSM =      CSDCMD
+#pragma config WDTPS =      PS1048576
+#pragma config FWDTEN =     ON
+#pragma config WINDIS =     OFF
+#pragma config FWDTWINSZ =  WINSZ_25
+
+/*** DEVCFG2 ***/
+
+#pragma config FPLLIDIV =   DIV_2
+#pragma config FPLLMUL =    MUL_20
+#pragma config FPLLODIV =   DIV_2
+
+/*** DEVCFG3 ***/
+
+#pragma config USERID =     0xffff
+#pragma config PMDL1WAY =   OFF
+#pragma config IOL1WAY =    OFF
+#pragma config FUSBIDIO =   OFF
+#pragma config FVBUSONIO =  OFF
+// </editor-fold>
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Library/Stack Initialization Data
+// *****************************************************************************
+// *****************************************************************************
+
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Driver Initialization Data
+// *****************************************************************************
+// *****************************************************************************
+
+//<editor-fold defaultstate="collapsed" desc="DRV_USART Initialization Data">
+
+// </editor-fold>
+//<editor-fold defaultstate="collapsed" desc="DRV_NVM Initialization Data">
+
+/*** FLASH Driver Initialization Data ***/
+
+SYS_FS_MEDIA_REGION_GEOMETRY NVMGeometryTable[3] = 
+{
+    {
+        .blockSize = 1,
+        .numBlocks = (DRV_NVM_MEDIA_SIZE * 1024),
+    },
+    {
+       .blockSize = DRV_NVM_ROW_SIZE,
+       .numBlocks = ((DRV_NVM_MEDIA_SIZE * 1024)/DRV_NVM_ROW_SIZE)
+    },
+    {
+       .blockSize = DRV_NVM_PAGE_SIZE,
+       .numBlocks = ((DRV_NVM_MEDIA_SIZE * 1024)/DRV_NVM_PAGE_SIZE)
+    }
+};
+
+const SYS_FS_MEDIA_GEOMETRY NVMGeometry = 
+{
+    .mediaProperty = SYS_FS_MEDIA_WRITE_IS_BLOCKING,
+    .numReadRegions = 1,
+    .numWriteRegions = 1,
+    .numEraseRegions = 1,
+    .geometryTable = (SYS_FS_MEDIA_REGION_GEOMETRY *)&NVMGeometryTable
+};
+
+const DRV_NVM_INIT drvNvmInit =
+{
+    .moduleInit.sys.powerState = SYS_MODULE_POWER_RUN_FULL,
+    .nvmID = NVM_ID_0,
+    .interruptSource = INT_SOURCE_FLASH_CONTROL,
+
+    .mediaStartAddress = 0x9D010000,
+    .nvmMediaGeometry = (SYS_FS_MEDIA_GEOMETRY *)&NVMGeometry
+
+};
+
+
+// </editor-fold>
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: System Data
+// *****************************************************************************
+// *****************************************************************************
+
+/* Structure to hold the object handles for the modules in the system. */
+SYSTEM_OBJECTS sysObj;
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: Module Initialization Data
+// *****************************************************************************
+// *****************************************************************************
+
+/*******************************************************************************
+  Device Control System Service Initialization Data
+  
+  <editor-fold defaultstate="collapsed" 
+  desc="Device Control System Service Initialization Data">
+*/
+
+const SYS_DEVCON_INIT sysDevconInit =
+{
+    .moduleInit = {0},
+};
+
+// </editor-fold>
+
+
+//<editor-fold defaultstate="collapsed" desc="SYS_DMA Initialization Data">
+
+/*** System DMA Initialization Data ***/
+
+const SYS_DMA_INIT sysDmaInit =
+{
+	.sidl = SYS_DMA_SIDL_DISABLE,
+
+};
+
+// </editor-fold>
+//<editor-fold defaultstate="collapsed" desc="SYS_FS Initialization Data">
+
+
+
+/*** File System Initialization Data ***/
+
+
+const SYS_FS_MEDIA_MOUNT_DATA sysfsMountTable[SYS_FS_VOLUME_NUMBER] = 
+{
+    
+    {
+		.mountName = SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX0,
+		.devName   = SYS_FS_MEDIA_IDX0_DEVICE_NAME_VOLUME_IDX0, 
+		.mediaType = SYS_FS_MEDIA_TYPE_IDX0,
+		.fsType   = SYS_FS_TYPE_IDX0   
+    },
+    {
+		.mountName = SYS_FS_MEDIA_IDX0_MOUNT_NAME_VOLUME_IDX1,
+		.devName   = SYS_FS_MEDIA_IDX0_DEVICE_NAME_VOLUME_IDX1, 
+		.mediaType = SYS_FS_MEDIA_TYPE_IDX0,
+		.fsType   = SYS_FS_TYPE_IDX0   
+    },    
+    
+    {
+		.mountName = SYS_FS_MEDIA_IDX1_MOUNT_NAME_VOLUME_IDX0,
+		.devName   = SYS_FS_MEDIA_IDX1_DEVICE_NAME_VOLUME_IDX0, 
+		.mediaType = SYS_FS_MEDIA_TYPE_IDX1,
+		.fsType   = SYS_FS_TYPE_IDX1   
+    },
+
+
+
+     
+};
+
+
+
+
+const SYS_FS_REGISTRATION_TABLE sysFSInit [ SYS_FS_MAX_FILE_SYSTEM_TYPE ] =
+{
+    {
+        .nativeFileSystemType = FAT,
+        .nativeFileSystemFunctions = &FatFsFunctions
+    }
+};
+
+
+// </editor-fold>
+//<editor-fold defaultstate="collapsed" desc="SYS_DEBUG Initialization Data">
+/*** System Debug Initialization Data ***/
+
+SYS_DEBUG_INIT debugInit =
+{
+    .moduleInit = {0},
+    .errorLevel = SYS_ERROR_FATAL
+};
+// </editor-fold>
+//<editor-fold defaultstate="collapsed" desc="SYS_CONSOLE Initialization Data">
+// </editor-fold>
+// *****************************************************************************
+// *****************************************************************************
+// Section: Static Initialization Functions
+// *****************************************************************************
+// *****************************************************************************
+
+
+// *****************************************************************************
+// *****************************************************************************
+// Section: System Initialization
+// *****************************************************************************
+// *****************************************************************************
+
+/*******************************************************************************
+  Function:
+    void SYS_Initialize ( SYS_INIT_DATA *data )
+
+  Summary:
+    Initializes the board, services, drivers, application and other modules.
+
+  Remarks:
+    See prototype in system/common/sys_module.h.
+ */
+
+void SYS_Initialize ( void* data )
+{
+    /* Core Processor Initialization */
+    SYS_CLK_Initialize( NULL );
+    sysObj.sysDevcon = SYS_DEVCON_Initialize(SYS_DEVCON_INDEX_0, (SYS_MODULE_INIT*)&sysDevconInit);
+    SYS_DEVCON_PerformanceConfig(SYS_CLK_SystemFrequencyGet());
+    SYS_PORTS_Initialize();
+    sysObj.sysDma = SYS_DMA_Initialize((SYS_MODULE_INIT *)&sysDmaInit);
+
+
+
+
+    /* Initialize Drivers */
+    /* Initialize ADC */
+    DRV_ADC_Initialize();
+    DRV_USART0_Initialize();
+    /* Configure the Flash Controller Interrupt Priority */
+    SYS_INT_VectorPrioritySet(INT_VECTOR_FCE, INT_PRIORITY_LEVEL3);
+
+    /* Configure the Flash Controller Interrupt Sub Priority */
+    SYS_INT_VectorSubprioritySet(INT_VECTOR_FCE, INT_SUBPRIORITY_LEVEL0);
+
+    /* Initialize the NVM Driver */
+    sysObj.drvNvm = DRV_NVM_Initialize(DRV_NVM_INDEX_0, (SYS_MODULE_INIT *)&drvNvmInit);
+
+
+    /*Initialize OC0 */
+    DRV_OC0_Initialize();
+
+    /*Initialize OC1 */
+    DRV_OC1_Initialize();
+
+    /*Initialize OC2 */
+    DRV_OC2_Initialize();
+
+    /*Initialize OC3 */
+    DRV_OC3_Initialize();
+
+    /* Initialize System Services */
+    SYS_INT_Initialize();  
+    sysObj.sysConsole0 = SYS_CONSOLE_Initialize(SYS_CONSOLE_INDEX_0, NULL);
+
+    sysObj.sysDebug = SYS_DEBUG_Initialize(SYS_DEBUG_INDEX_0, (SYS_MODULE_INIT*)&debugInit);
+    SYS_FS_Initialize( (const void *) sysFSInit );
+	
+    /*Setup the INT_SOURCE_EXTERNAL_1 and Enable it*/
+    SYS_INT_VectorPrioritySet(INT_VECTOR_INT1, INT_PRIORITY_LEVEL7);
+    SYS_INT_VectorSubprioritySet(INT_VECTOR_INT1, INT_SUBPRIORITY_LEVEL0);
+    SYS_INT_ExternalInterruptTriggerSet(INT_EXTERNAL_INT_SOURCE1,INT_EDGE_TRIGGER_FALLING);
+    SYS_INT_SourceEnable(INT_SOURCE_EXTERNAL_1);
+
+
+
+
+
+
+    /* Initialize Middleware */
+
+    /* Initialize the Application */
+    APP_Initialize();
+}
+
+
+/*******************************************************************************
+ End of File
+*/
+

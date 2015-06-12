@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration version="1.0.4.22">
+  <Designer>
+    <Screens height="200" width="320">
+      <Screen active="true" background="000000" export="true" name="Untitled" primary="true">
+        <Objects/>
+      </Screen>
+    </Screens>
+    <Schemes>
+      <Scheme name="default">
+        <Alpha>255</Alpha>
+        <BackgroundOffset>0,0</BackgroundOffset>
+        <EmbossSize>3</EmbossSize>
+        <Colors>
+          <Primary>FFFFFF</Primary>
+          <Secondary>404040</Secondary>
+          <Disabled>C0C0C0</Disabled>
+          <Background>000000</Background>
+          <EmbossLight>C0C0C0</EmbossLight>
+          <EmbossDark>404040</EmbossDark>
+          <TextPrimary>000000</TextPrimary>
+          <TextSecondary>FFFFFF</TextSecondary>
+          <TextDisabled>404040</TextDisabled>
+        </Colors>
+      </Scheme>
+    </Schemes>
+  </Designer>
+  <General>
+    <HarmonyPath path="../.."/>
+    <ForceOptimization flag="true"/>
+  </General>
+  <Manifest>
+    <Files>
+      <File>
+        <Name>wav.c</Name>
+        <Path>Source Files/framework/decoder/default/wav/support</Path>
+      </File>
+      <File>
+        <Name>timers.h</Name>
+        <Path>Header Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>sys_fs_media_manager.c</Name>
+        <Path>Source Files/framework/system/fs/src/dynamic</Path>
+      </File>
+      <File>
+        <Name>projdefs.h</Name>
+        <Path>Header Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>portable.h</Name>
+        <Path>Header Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>port_asm.S</Name>
+        <Path>Source Files/FreeRTOS/portable/MPLAB/PIC32MX</Path>
+      </File>
+      <File>
+        <Name>ISR_Support.h</Name>
+        <Path>Header Files/FreeRTOS/portable/MPLAB/PIC32MX</Path>
+      </File>
+      <File>
+        <Name>drv_nvm.c</Name>
+        <Path>Source Files/framework/driver/nvm/src/dynamic</Path>
+      </File>
+      <File>
+        <Name>sys_dma.c</Name>
+        <Path>Source Files/framework/system/dma</Path>
+      </File>
+      <File>
+        <Name>drv_nvm_erasewrite.c</Name>
+        <Path>Source Files/framework/driver/nvm/src/dynamic</Path>
+      </File>
+      <File>
+        <Name>osal_freertos.c</Name>
+        <Path>Source Files/framework/osal/src</Path>
+      </File>
+      <File>
+        <Name>diskio.h</Name>
+        <Path>Header Files/framework/system/fs</Path>
+      </File>
+      <File>
+        <Name>queue.c</Name>
+        <Path>Source Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>general-exception.s</Name>
+        <Path>Source Files/framework/math/dsp</Path>
+      </File>
+      <File>
+        <Name>portmacro.h</Name>
+        <Path>Header Files/FreeRTOS/portable/MPLAB/PIC32MX</Path>
+      </File>
+      <File>
+        <Name>mp3.c</Name>
+        <Path>Source Files/framework/decoder/default/stubs</Path>
+      </File>
+      <File>
+        <Name>sys_int.h</Name>
+        <Path>Header Files/framework/system/int</Path>
+      </File>
+      <File>
+        <Name>sys_debug.h</Name>
+        <Path>Header Files/framework/system/debug</Path>
+      </File>
+      <File>
+        <Name>sys_fs.h</Name>
+        <Path>Header Files/framework/system/fs</Path>
+      </File>
+      <File>
+        <Name>system.h</Name>
+        <Path>Header Files/framework/system</Path>
+      </File>
+      <File>
+        <Name>sys_fs_media_manager.h</Name>
+        <Path>Header Files/framework/system/fs</Path>
+      </File>
+      <File>
+        <Name>wma.h</Name>
+        <Path>Header Files/framework/decoder/default/stubs</Path>
+      </File>
+      <File>
+        <Name>event_groups.h</Name>
+        <Path>Header Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>heap_1.c</Name>
+        <Path>Source Files/FreeRTOS/portable/MemMang</Path>
+      </File>
+      <File>
+        <Name>sys_fs.c</Name>
+        <Path>Source Files/framework/system/fs/src/dynamic</Path>
+      </File>
+      <File>
+        <Name>sys_console.h</Name>
+        <Path>Header Files/framework/system/console</Path>
+      </File>
+      <File>
+        <Name>ff.h</Name>
+        <Path>Header Files/framework/system/fs</Path>
+      </File>
+      <File>
+        <Name>timers.c</Name>
+        <Path>Source Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>StackMacros.h</Name>
+        <Path>Header Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>default-general-exception-handler.c</Name>
+        <Path>Source Files/framework/math/dsp</Path>
+      </File>
+      <File>
+        <Name>ff.c</Name>
+        <Path>Source Files/framework/system/fs</Path>
+      </File>
+      <File>
+        <Name>ffconf.h</Name>
+        <Path>Header Files/framework/system/fs</Path>
+      </File>
+      <File>
+        <Name>sys_module.h</Name>
+        <Path>Header Files/framework/system/common</Path>
+      </File>
+      <File>
+        <Name>sys_dma.h</Name>
+        <Path>Header Files/framework/system/dma</Path>
+      </File>
+      <File>
+        <Name>sys_common.h</Name>
+        <Path>Header Files/framework/system/common</Path>
+      </File>
+      <File>
+        <Name>mp3.h</Name>
+        <Path>Header Files/framework/decoder/default/stubs</Path>
+      </File>
+      <File>
+        <Name>list.c</Name>
+        <Path>Source Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>sys_ports.c</Name>
+        <Path>Source Files/framework/system/ports/src</Path>
+      </File>
+      <File>
+        <Name>port.c</Name>
+        <Path>Source Files/FreeRTOS/portable/MPLAB/PIC32MX</Path>
+      </File>
+      <File>
+        <Name>tasks.c</Name>
+        <Path>Source Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>event_groups.c</Name>
+        <Path>Source Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>queue.h</Name>
+        <Path>Header Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>drv_nvm.h</Name>
+        <Path>Header Files/framework/driver/nvm</Path>
+      </File>
+      <File>
+        <Name>wav.h</Name>
+        <Path>Header Files/framework/decoder/default/wav/support</Path>
+      </File>
+      <File>
+        <Name>croutine.h</Name>
+        <Path>Header Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>sys_devcon.c</Name>
+        <Path>Source Files/framework/system/devcon/src</Path>
+      </File>
+      <File>
+        <Name>sys_ports.h</Name>
+        <Path>Header Files/framework/system/ports</Path>
+      </File>
+      <File>
+        <Name>list.h</Name>
+        <Path>Header Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>diskio.c</Name>
+        <Path>Source Files/framework/system/fs</Path>
+      </File>
+      <File>
+        <Name>sys_devcon.h</Name>
+        <Path>Header Files/framework/system/devcon</Path>
+      </File>
+      <File>
+        <Name>task.h</Name>
+        <Path>Header Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>aac.c</Name>
+        <Path>Source Files/framework/decoder/default/stubs</Path>
+      </File>
+      <File>
+        <Name>mpu_wrappers.h</Name>
+        <Path>Header Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>semphr.h</Name>
+        <Path>Header Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>sys_debug.c</Name>
+        <Path>Source Files/framework/system/debug/src</Path>
+      </File>
+      <File>
+        <Name>crypto.c</Name>
+        <Path>Source Files/framework/crypto/src</Path>
+      </File>
+      <File>
+        <Name>crypto.h</Name>
+        <Path>Header Files/framework/crypto</Path>
+      </File>
+      <File>
+        <Name>driver.h</Name>
+        <Path>Header Files/framework/driver</Path>
+      </File>
+      <File>
+        <Name>croutine.c</Name>
+        <Path>Source Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>wma.c</Name>
+        <Path>Source Files/framework/decoder/default/stubs</Path>
+      </File>
+      <File>
+        <Name>FreeRTOS.h</Name>
+        <Path>Header Files/FreeRTOS</Path>
+      </File>
+      <File>
+        <Name>sys_int_pic32.c</Name>
+        <Path>Source Files/framework/system/int/src</Path>
+      </File>
+      <File>
+        <Name>sys_devcon_pic32mx.c</Name>
+        <Path>Source Files/framework/system/devcon/src</Path>
+      </File>
+      <File>
+        <Name>aac.h</Name>
+        <Path>Header Files/framework/decoder/default/stubs</Path>
+      </File>
+      <File>
+        <Name>sys_console_local.h</Name>
+        <Path>Header Files/framework/system/console/src</Path>
+      </File>
+    </Files>
+    <Templates>
+      <Template>
+        <Name>main.c</Name>
+        <Path>Source Files/app</Path>
+      </Template>
+      <Template>
+        <Name>system_exceptions.c</Name>
+        <Path>Source Files/app/system_config/default</Path>
+        <Checksum>C111969CA43D6CEA1E9E33A6164E7AE0</Checksum>
+      </Template>
+      <Template>
+        <Name>drv_adc_static.c</Name>
+        <Path>Source Files/app/system_config/default/framework/driver/adc/src</Path>
+        <Checksum>85D2193DC5BC765D06626BCFEC246727</Checksum>
+      </Template>
+      <Template>
+        <Name>system_config.h</Name>
+        <Path>Header Files/app/system_config/default</Path>
+        <Checksum>FCD26F4C579C4276161A74B6098309BA</Checksum>
+      </Template>
+      <Template>
+        <Name>rtos_hooks.c</Name>
+        <Path>Source Files/app/system_config/default</Path>
+        <Checksum>FA52743264536E5207D2ADBE57B48D05</Checksum>
+      </Template>
+      <Template>
+        <Name>drv_usart_static.h</Name>
+        <Path>Header Files/app/system_config/default/framework/driver/usart</Path>
+        <Checksum>66C127084540B78CD4F78E2FBCC6D29F</Checksum>
+      </Template>
+      <Template>
+        <Name>system_interrupt.c</Name>
+        <Path>Source Files/app/system_config/default</Path>
+        <Checksum>3864AD6B86A56CFC4DD5EE8EBAC6E512</Checksum>
+      </Template>
+      <Template>
+        <Name>sys_ports_static.c</Name>
+        <Path>Source Files/app/system_config/default/framework/system/ports/src</Path>
+        <Checksum>1D7BA959DF5110A8623D6EEF432FD8B7</Checksum>
+      </Template>
+      <Template>
+        <Name>sys_console_static.c</Name>
+        <Path>Source Files/app/system_config/default/framework/system/console/src</Path>
+        <Checksum>6FF46FB2595B593CB71B3330DB734615</Checksum>
+      </Template>
+      <Template>
+        <Name>sys_clk_static.h</Name>
+        <Path>Header Files/app/system_config/default/framework/system/clk</Path>
+        <Checksum>999179DADE9ECD59953526F5E9F83ACC</Checksum>
+      </Template>
+      <Template>
+        <Name>app.h</Name>
+        <Path>Header Files/app</Path>
+      </Template>
+      <Template>
+        <Name>drv_oc_static.c</Name>
+        <Path>Source Files/app/system_config/default/framework/driver/oc/src</Path>
+        <Checksum>6C7E6EC2DF7E290653885C5BBFC0DC19</Checksum>
+      </Template>
+      <Template>
+        <Name>system_tasks.c</Name>
+        <Path>Source Files/app/system_config/default</Path>
+        <Checksum>0F0F843EFD613AB4825B3E58B64F5A65</Checksum>
+      </Template>
+      <Template>
+        <Name>drv_adc_static.h</Name>
+        <Path>Header Files/app/system_config/default/framework/driver/adc</Path>
+        <Checksum>F4EF5E9BB0AD41096134234AAA14D5EA</Checksum>
+      </Template>
+      <Template>
+        <Name>drv_oc_static.h</Name>
+        <Path>Header Files/app/system_config/default/framework/driver/oc</Path>
+        <Checksum>F15E812FBB3012DBF928EEC403072B71</Checksum>
+      </Template>
+      <Template>
+        <Name>FreeRTOSConfig.h</Name>
+        <Path>Header Files/app/system_config/default</Path>
+        <Checksum>FB5D013DFBDB7ED7DF4164D9BCD069A6</Checksum>
+      </Template>
+      <Template>
+        <Name>app.c</Name>
+        <Path>Source Files/app</Path>
+      </Template>
+      <Template>
+        <Name>system_init.c</Name>
+        <Path>Source Files/app/system_config/default</Path>
+        <Checksum>5AA3DF9FBA20BA5D8D8A39EEBC9E3D9D</Checksum>
+      </Template>
+      <Template>
+        <Name>system_interrupt_a.S</Name>
+        <Path>Source Files/app/system_config/default</Path>
+        <Checksum>1007841574ED6F86D7104D4DD3570141</Checksum>
+      </Template>
+      <Template>
+        <Name>drv_usart_static.c</Name>
+        <Path>Source Files/app/system_config/default/framework/driver/usart</Path>
+        <Checksum>189A93270C41DA9617F791B8D5FC4B38</Checksum>
+      </Template>
+      <Template>
+        <Name>sys_clk_static.c</Name>
+        <Path>Source Files/app/system_config/default/framework/system/clk/src</Path>
+        <Checksum>27122BBFD483AF6F9CDC5E383D7ED156</Checksum>
+      </Template>
+      <Template>
+        <Name>system_definitions.h</Name>
+        <Path>Header Files/app/system_config/default</Path>
+        <Checksum>6F8B8D269C980354798EB4C8FDFC2A42</Checksum>
+      </Template>
+    </Templates>
+    <CompilerItems>
+      <C32-AS>
+        <Include value="../../../../third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MX"/>
+        <Include value="../../../../third_party/rtos/FreeRTOS/Source/include"/>
+        <Include value="../src/system_config/default"/>
+      </C32-AS>
+      <C32>
+        <Include value="../../../../third_party/rtos/FreeRTOS/Source/portable/MPLAB/PIC32MX"/>
+        <Include value="../../../../third_party/rtos/FreeRTOS/Source/include"/>
+        <Include value="../src/system_config/default"/>
+        <Define value="__XC"/>
+      </C32>
+    </CompilerItems>
+    <Libraries>
+      <Library value="../../../../bin/framework/peripheral/PIC32MX120F032B_peripherals.a"/>
+    </Libraries>
+  </Manifest>
+</configuration>
