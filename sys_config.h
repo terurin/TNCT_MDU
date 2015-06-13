@@ -7,7 +7,7 @@
 
 #include <xc.h>
 
-#define System_Clock() 40000000
+#define System_Clock 40000000
 
 /* PORT 設定
 

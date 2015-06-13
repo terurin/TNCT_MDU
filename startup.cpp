@@ -2,7 +2,7 @@
 #include "sys_config.h"
 #include <plib.h>
 #include <xc.h>
-void main (){
+int main (){
 
     init();
 }
