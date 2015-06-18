@@ -3,15 +3,17 @@
 
 #ifndef MOTOR_H
 #define	MOTOR_H
+//#include "dsp.h"
+/*
+ 
+ */
 
-class Motor {
-public:
-    Motor();
-    Motor(const Motor& orig);
-    virtual ~Motor();
-private:
+class IMotor{
+    
 
 };
+
+
 
 #endif	/* MOTOR_H */
 

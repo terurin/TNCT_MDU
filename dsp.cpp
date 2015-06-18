@@ -1,15 +1,13 @@
-/*  
- *
- */
+#include <machine/int_limits.h>
 
 #include "dsp.h"
 
-dsp::dsp() {
-}
 
-dsp::dsp(const dsp& orig) {
-}
 
-dsp::~dsp() {
-}
 
+
+
+
+float ToFloat(Q16 var){
+    return (float)var.raw/UINT16_MAX;
+}

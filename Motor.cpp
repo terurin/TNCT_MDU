@@ -7,12 +7,4 @@
 
 #include "Motor.h"
 
-Motor::Motor() {
-}
-
-Motor::Motor(const Motor& orig) {
-}
-
-Motor::~Motor() {
-}
 

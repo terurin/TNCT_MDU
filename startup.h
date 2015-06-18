@@ -1,7 +1,6 @@
 #ifndef STARTUP_H
 #define	STARTUP_H
-
-void main ();//donot call this
+int  main ();//donot call this
 
 /* 作成者　川上　輝
  * 作成日時     2015/6/10

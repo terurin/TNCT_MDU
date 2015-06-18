@@ -1,16 +1,21 @@
 #include "startup.h"
 #include "sys_config.h"
-#include <plib.h>
-#include <xc.h>
-void main (){
 
-    init();
+#include <p32xxxx.h>
+#include <plib.h>
+//#include "Motor.h"
+#include "dsp.h"
+int main (){
+    
+    while(1){
+        
+    }
 }
 void init(){
 
 
 
-    SYSTEMConfigPerformance(System_Clock);
+    SYSTEMConfigPerformance(System_Clock());
     mJTAGPortEnable(false);
 
     init_port();
@@ -65,7 +70,7 @@ void init_port(){
 }
 
 
-
+#include <peripheral/adc10.h>
 void init_adc(){
 
     /* 対象となるぴん
