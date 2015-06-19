@@ -1,4 +1,3 @@
 build/default/debug/config.o:  \
 config.c  \
-sys_config.h  \
-
+sys_config.h 

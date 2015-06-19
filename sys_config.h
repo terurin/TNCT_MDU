@@ -59,7 +59,12 @@ extern address_t GetAddress();
 #define SelectedLED(fag) (LATBbits.LATB11=fag)
 
 
-
+enum AnalogPinNames{
+    AnalogPinNone,
+    AnalogPinMotorAmpA,
+    AnalogPinMotorAmpB,
+    AnalogPinMotorVlot
+};
 
 
 

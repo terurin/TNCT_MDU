@@ -104,16 +104,7 @@ void init_adc(){
 
 void init_oc(){
 
-    /*ピンアサインを行う。設定は以下のとおりである。
-     * RB7 MotorA1          Output  Digital OC1
-    * RB8 MotorB1          OutPut  Digital OC2
-     * RB13 MotorB2         Output  Digital OC4
-     * RB14 MotorA2         Output  Digital OC3
-*/
-    RPB7R=0b0101;//OC1
-    RPB8R=0b0101;//OC2
-    RPB13R=0b0101;//OC4
-    RPB14R=0b0101;//OC3
+//moved
 
     
 
