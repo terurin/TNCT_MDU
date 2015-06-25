@@ -45,17 +45,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=Motor.cpp startup.cpp config.c dsp.cpp
+SOURCEFILES_QUOTED_IF_SPACED=dsp.cpp startup.cpp config.c D:/class/MDM32.X/ErrorObject.cpp
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/Motor.o ${OBJECTDIR}/startup.o ${OBJECTDIR}/config.o ${OBJECTDIR}/dsp.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/Motor.o.d ${OBJECTDIR}/startup.o.d ${OBJECTDIR}/config.o.d ${OBJECTDIR}/dsp.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/dsp.o ${OBJECTDIR}/startup.o ${OBJECTDIR}/config.o ${OBJECTDIR}/_ext/133597949/ErrorObject.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/dsp.o.d ${OBJECTDIR}/startup.o.d ${OBJECTDIR}/config.o.d ${OBJECTDIR}/_ext/133597949/ErrorObject.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/Motor.o ${OBJECTDIR}/startup.o ${OBJECTDIR}/config.o ${OBJECTDIR}/dsp.o
+OBJECTFILES=${OBJECTDIR}/dsp.o ${OBJECTDIR}/startup.o ${OBJECTDIR}/config.o ${OBJECTDIR}/_ext/133597949/ErrorObject.o
 
 # Source Files
-SOURCEFILES=Motor.cpp startup.cpp config.c dsp.cpp
+SOURCEFILES=dsp.cpp startup.cpp config.c D:/class/MDM32.X/ErrorObject.cpp
 
 
 CFLAGS=
@@ -112,42 +112,42 @@ endif
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compileCPP
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/Motor.o: Motor.cpp  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/dsp.o: dsp.cpp  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/Motor.o.d 
-	@${RM} ${OBJECTDIR}/Motor.o 
-	@${FIXDEPS} "${OBJECTDIR}/Motor.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CPPC} $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_SIMULATOR=1 -fframe-base-loclist  -x c++ -c -mprocessor=$(MP_PROCESSOR_OPTION)  -frtti -fexceptions -fno-check-new -fenforce-eh-specs -fomit-frame-pointer -MMD -MF "${OBJECTDIR}/Motor.o.d" -o ${OBJECTDIR}/Motor.o Motor.cpp  
+	@${RM} ${OBJECTDIR}/dsp.o.d 
+	@${RM} ${OBJECTDIR}/dsp.o 
+	@${FIXDEPS} "${OBJECTDIR}/dsp.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CPPC} $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_SIMULATOR=1 -fframe-base-loclist  -x c++ -c -mprocessor=$(MP_PROCESSOR_OPTION)  -frtti -fexceptions -fno-check-new -fenforce-eh-specs -fomit-frame-pointer -I"C:/Program Files (x86)/Microchip/xc32/v1.34/pic32mx/include" -MMD -MF "${OBJECTDIR}/dsp.o.d" -o ${OBJECTDIR}/dsp.o dsp.cpp  
 	
 ${OBJECTDIR}/startup.o: startup.cpp  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/startup.o.d 
 	@${RM} ${OBJECTDIR}/startup.o 
-	@${FIXDEPS} "${OBJECTDIR}/startup.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CPPC} $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_SIMULATOR=1 -fframe-base-loclist  -x c++ -c -mprocessor=$(MP_PROCESSOR_OPTION)  -frtti -fexceptions -fno-check-new -fenforce-eh-specs -fomit-frame-pointer -MMD -MF "${OBJECTDIR}/startup.o.d" -o ${OBJECTDIR}/startup.o startup.cpp  
+	@${FIXDEPS} "${OBJECTDIR}/startup.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CPPC} $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_SIMULATOR=1 -fframe-base-loclist  -x c++ -c -mprocessor=$(MP_PROCESSOR_OPTION)  -frtti -fexceptions -fno-check-new -fenforce-eh-specs -fomit-frame-pointer -I"C:/Program Files (x86)/Microchip/xc32/v1.34/pic32mx/include" -MMD -MF "${OBJECTDIR}/startup.o.d" -o ${OBJECTDIR}/startup.o startup.cpp  
 	
-${OBJECTDIR}/dsp.o: dsp.cpp  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/dsp.o.d 
-	@${RM} ${OBJECTDIR}/dsp.o 
-	@${FIXDEPS} "${OBJECTDIR}/dsp.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CPPC} $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_SIMULATOR=1 -fframe-base-loclist  -x c++ -c -mprocessor=$(MP_PROCESSOR_OPTION)  -frtti -fexceptions -fno-check-new -fenforce-eh-specs -fomit-frame-pointer -MMD -MF "${OBJECTDIR}/dsp.o.d" -o ${OBJECTDIR}/dsp.o dsp.cpp  
+${OBJECTDIR}/_ext/133597949/ErrorObject.o: D:/class/MDM32.X/ErrorObject.cpp  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/133597949" 
+	@${RM} ${OBJECTDIR}/_ext/133597949/ErrorObject.o.d 
+	@${RM} ${OBJECTDIR}/_ext/133597949/ErrorObject.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/133597949/ErrorObject.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CPPC} $(MP_EXTRA_CC_PRE) -g -D__DEBUG -D__MPLAB_DEBUGGER_SIMULATOR=1 -fframe-base-loclist  -x c++ -c -mprocessor=$(MP_PROCESSOR_OPTION)  -frtti -fexceptions -fno-check-new -fenforce-eh-specs -fomit-frame-pointer -I"C:/Program Files (x86)/Microchip/xc32/v1.34/pic32mx/include" -MMD -MF "${OBJECTDIR}/_ext/133597949/ErrorObject.o.d" -o ${OBJECTDIR}/_ext/133597949/ErrorObject.o D:/class/MDM32.X/ErrorObject.cpp  
 	
 else
-${OBJECTDIR}/Motor.o: Motor.cpp  nbproject/Makefile-${CND_CONF}.mk
+${OBJECTDIR}/dsp.o: dsp.cpp  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/Motor.o.d 
-	@${RM} ${OBJECTDIR}/Motor.o 
-	@${FIXDEPS} "${OBJECTDIR}/Motor.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CPPC} $(MP_EXTRA_CC_PRE)  -g -x c++ -c -mprocessor=$(MP_PROCESSOR_OPTION)  -frtti -fexceptions -fno-check-new -fenforce-eh-specs -fomit-frame-pointer -MMD -MF "${OBJECTDIR}/Motor.o.d" -o ${OBJECTDIR}/Motor.o Motor.cpp  
+	@${RM} ${OBJECTDIR}/dsp.o.d 
+	@${RM} ${OBJECTDIR}/dsp.o 
+	@${FIXDEPS} "${OBJECTDIR}/dsp.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CPPC} $(MP_EXTRA_CC_PRE)  -g -x c++ -c -mprocessor=$(MP_PROCESSOR_OPTION)  -frtti -fexceptions -fno-check-new -fenforce-eh-specs -fomit-frame-pointer -I"C:/Program Files (x86)/Microchip/xc32/v1.34/pic32mx/include" -MMD -MF "${OBJECTDIR}/dsp.o.d" -o ${OBJECTDIR}/dsp.o dsp.cpp  
 	
 ${OBJECTDIR}/startup.o: startup.cpp  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
 	@${RM} ${OBJECTDIR}/startup.o.d 
 	@${RM} ${OBJECTDIR}/startup.o 
-	@${FIXDEPS} "${OBJECTDIR}/startup.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CPPC} $(MP_EXTRA_CC_PRE)  -g -x c++ -c -mprocessor=$(MP_PROCESSOR_OPTION)  -frtti -fexceptions -fno-check-new -fenforce-eh-specs -fomit-frame-pointer -MMD -MF "${OBJECTDIR}/startup.o.d" -o ${OBJECTDIR}/startup.o startup.cpp  
+	@${FIXDEPS} "${OBJECTDIR}/startup.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CPPC} $(MP_EXTRA_CC_PRE)  -g -x c++ -c -mprocessor=$(MP_PROCESSOR_OPTION)  -frtti -fexceptions -fno-check-new -fenforce-eh-specs -fomit-frame-pointer -I"C:/Program Files (x86)/Microchip/xc32/v1.34/pic32mx/include" -MMD -MF "${OBJECTDIR}/startup.o.d" -o ${OBJECTDIR}/startup.o startup.cpp  
 	
-${OBJECTDIR}/dsp.o: dsp.cpp  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}" 
-	@${RM} ${OBJECTDIR}/dsp.o.d 
-	@${RM} ${OBJECTDIR}/dsp.o 
-	@${FIXDEPS} "${OBJECTDIR}/dsp.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CPPC} $(MP_EXTRA_CC_PRE)  -g -x c++ -c -mprocessor=$(MP_PROCESSOR_OPTION)  -frtti -fexceptions -fno-check-new -fenforce-eh-specs -fomit-frame-pointer -MMD -MF "${OBJECTDIR}/dsp.o.d" -o ${OBJECTDIR}/dsp.o dsp.cpp  
+${OBJECTDIR}/_ext/133597949/ErrorObject.o: D:/class/MDM32.X/ErrorObject.cpp  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}/_ext/133597949" 
+	@${RM} ${OBJECTDIR}/_ext/133597949/ErrorObject.o.d 
+	@${RM} ${OBJECTDIR}/_ext/133597949/ErrorObject.o 
+	@${FIXDEPS} "${OBJECTDIR}/_ext/133597949/ErrorObject.o.d" $(SILENT) -rsi ${MP_CC_DIR}../  -c ${MP_CPPC} $(MP_EXTRA_CC_PRE)  -g -x c++ -c -mprocessor=$(MP_PROCESSOR_OPTION)  -frtti -fexceptions -fno-check-new -fenforce-eh-specs -fomit-frame-pointer -I"C:/Program Files (x86)/Microchip/xc32/v1.34/pic32mx/include" -MMD -MF "${OBJECTDIR}/_ext/133597949/ErrorObject.o.d" -o ${OBJECTDIR}/_ext/133597949/ErrorObject.o D:/class/MDM32.X/ErrorObject.cpp  
 	
 endif
 

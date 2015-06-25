@@ -4,13 +4,20 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
+      <logicalFolder name="f2" displayName="Math" projectFiles="true">
+        <itemPath>D:/class/MDM32.X/Between.h</itemPath>
+        <itemPath>dsp.h</itemPath>
+      </logicalFolder>
       <logicalFolder name="f1" displayName="Module" projectFiles="true">
         <itemPath>Motor.h</itemPath>
+        <itemPath>D:/class/MDM32.X/adc.h</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f3" displayName="System" projectFiles="true">
       </logicalFolder>
       <itemPath>startup.h</itemPath>
       <itemPath>user_config.h</itemPath>
       <itemPath>sys_config.h</itemPath>
-      <itemPath>dsp.h</itemPath>
+      <itemPath>D:/class/MDM32.X/ErrorObject.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -24,12 +31,18 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
+      <logicalFolder name="f2" displayName="Math" projectFiles="true">
+        <itemPath>dsp.cpp</itemPath>
+      </logicalFolder>
       <logicalFolder name="f1" displayName="Module" projectFiles="true">
         <itemPath>Motor.cpp</itemPath>
+        <itemPath>D:/class/MDM32.X/adc.cpp</itemPath>
+      </logicalFolder>
+      <logicalFolder name="f3" displayName="System" projectFiles="true">
       </logicalFolder>
       <itemPath>startup.cpp</itemPath>
       <itemPath>config.c</itemPath>
-      <itemPath>dsp.cpp</itemPath>
+      <itemPath>D:/class/MDM32.X/ErrorObject.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -39,6 +52,7 @@
   </logicalFolder>
   <sourceRootList>
     <Elem>D:\class\MDM32.X</Elem>
+    <Elem>C:\Program Files (x86)\Microchip\xc32\v1.34\pic32mx\lib</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>
@@ -101,6 +115,24 @@
       <C32-AR>
         <property key="additional-options-chop-files" value="false"/>
       </C32-AR>
+      <C32-AS>
+        <property key="assembler-symbols" value=""/>
+        <property key="enable-symbols" value="true"/>
+        <property key="exclude-floating-point-library" value="false"/>
+        <property key="expand-macros" value="false"/>
+        <property key="extra-include-directories-for-assembler" value=""/>
+        <property key="extra-include-directories-for-preprocessor" value=""/>
+        <property key="false-conditionals" value="false"/>
+        <property key="keep-locals" value="false"/>
+        <property key="list-assembly" value="false"/>
+        <property key="list-source" value="false"/>
+        <property key="list-symbols" value="false"/>
+        <property key="oXC32asm-list-to-file" value="false"/>
+        <property key="omit-debug-dirs" value="false"/>
+        <property key="omit-forms" value="false"/>
+        <property key="preprocessor-macros" value=""/>
+        <property key="warning-level" value=""/>
+      </C32-AS>
       <C32-LD>
         <property key="additional-options-use-response-files" value="false"/>
         <property key="enable-check-sections" value="false"/>
@@ -142,7 +174,8 @@
         <property key="enable-unroll-loops" value="false"/>
         <property key="exceptions" value="true"/>
         <property key="exclude-floating-point" value="false"/>
-        <property key="extra-include-directories" value=""/>
+        <property key="extra-include-directories"
+                  value="C:\Program Files (x86)\Microchip\xc32\v1.34\pic32mx\include"/>
         <property key="generate-16-bit-code" value="false"/>
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="false"/>
@@ -166,6 +199,34 @@
         <property key="save-temps" value="false"/>
         <property key="wpo-lto" value="false"/>
       </C32Global>
+      <item path="D:/class/MDM32.X/adc.cpp" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="D:/class/MDM32.X/adc.h" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
       <item path="D:/class/MDM32.X/md32-driver.CE3" ex="true" overriding="false">
         <C32>
         </C32>
@@ -181,6 +242,34 @@
         </C32Global>
       </item>
       <item path="D:/class/MDM32.X/md32.CE3" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="Motor.cpp" ex="true" overriding="false">
+        <C32>
+        </C32>
+        <C32-AR>
+        </C32-AR>
+        <C32-AS>
+        </C32-AS>
+        <C32-LD>
+        </C32-LD>
+        <C32CPP>
+        </C32CPP>
+        <C32Global>
+        </C32Global>
+      </item>
+      <item path="Motor.h" ex="true" overriding="false">
         <C32>
         </C32>
         <C32-AR>

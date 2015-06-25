@@ -60,10 +60,10 @@ extern address_t GetAddress();
 
 
 enum AnalogPinNames{
-    AnalogPinNone,
-    AnalogPinMotorAmpA,
-    AnalogPinMotorAmpB,
-    AnalogPinMotorVlot
+    AnalogPinNone=-1,
+    AnalogPinMotorAmpA=12,
+    AnalogPinMotorAmpB=9,
+    AnalogPinMotorVlot=1
 };
 
 
