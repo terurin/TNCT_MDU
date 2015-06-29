@@ -7,7 +7,7 @@
 
 #include <xc.h>
 
-#define System_Clock() 40000000
+#define System_Clock() 40000000UL
 
 /* PORT 設定
 
@@ -59,12 +59,6 @@ extern address_t GetAddress();
 #define SelectedLED(fag) (LATBbits.LATB11=fag)
 
 
-enum AnalogPinNames{
-    AnalogPinNone=-1,
-    AnalogPinMotorAmpA=12,
-    AnalogPinMotorAmpB=9,
-    AnalogPinMotorVlot=1
-};
 
 
 

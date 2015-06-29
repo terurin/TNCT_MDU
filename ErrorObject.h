@@ -2,25 +2,30 @@
  * File:   ErrorObject.h
  * Author: TERU
  *
- * Created on 2015/06/24, 17:45
+ * Created on 2015/06/25, 18:09
  */
 
 #ifndef ERROROBJECT_H
 #define	ERROROBJECT_H
-
+/*
 #include <string>
-#include <stdio.h>
+#include <vector>
+typedef basic_string<unsigned char,std::vector<unsigned char> string;
+
 
 class ErrorObject {
-    std::string text;
-    int code;
+private:
+    string& message;//エラーメッセージ
 public:
-    ErrorObject(int error_code,std::string error_text);
+    ErrorObject();
     ErrorObject(const ErrorObject& orig);
     virtual ~ErrorObject();
-private:
-
+    
+    const string& GetMessage()const;
+protected:
+    void SetMessage(string&);
 };
 
+*/
 #endif	/* ERROROBJECT_H */
 

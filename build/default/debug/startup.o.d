@@ -3,5 +3,6 @@ startup.cpp  \
 startup.h  \
 sys_config.h  \
 dsp.h  \
- Between.h  \
+ Q16.h  \
+math_typedef.h  \
 ErrorObject.h 
