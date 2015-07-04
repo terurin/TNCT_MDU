@@ -1,0 +1,681 @@
+// string standard header
+#ifndef _STRING_
+#define _STRING_
+#include <istream>
+
+_STD_BEGIN
+		// basic_string TEMPLATE OPERATORS
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_string<_Elem, _Traits, _Alloc> operator+(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// return string + string
+	basic_string<_Elem, _Traits, _Alloc> _Ans;
+	_Ans.reserve(_Left.size() + _Right.size());
+	_Ans += _Left;
+	_Ans += _Right;
+	return (_Ans);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_string<_Elem, _Traits, _Alloc> operator+(
+		const _Elem *_Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// return NTCS + string
+	basic_string<_Elem, _Traits, _Alloc> _Ans;
+	_Ans.reserve(_Traits::length(_Left) + _Right.size());
+	_Ans += _Left;
+	_Ans += _Right;
+	return (_Ans);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_string<_Elem, _Traits, _Alloc> operator+(
+		const _Elem _Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// return character + string
+	basic_string<_Elem, _Traits, _Alloc> _Ans;
+	_Ans.reserve(1 + _Right.size());
+	_Ans += _Left;
+	_Ans += _Right;
+	return (_Ans);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_string<_Elem, _Traits, _Alloc> operator+(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const _Elem *_Right)
+	{	// return string + NTCS
+	basic_string<_Elem, _Traits, _Alloc> _Ans;
+	_Ans.reserve(_Left.size() + _Traits::length(_Right));
+	_Ans += _Left;
+	_Ans += _Right;
+	return (_Ans);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_string<_Elem, _Traits, _Alloc> operator+(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const _Elem _Right)
+	{	// return string + character
+	basic_string<_Elem, _Traits, _Alloc> _Ans;
+	_Ans.reserve(_Left.size() + 1);
+	_Ans += _Left;
+	_Ans += _Right;
+	return (_Ans);
+	}
+
+ #if _HAS_RVALUE_REFERENCES
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_string<_Elem, _Traits, _Alloc> operator+(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		basic_string<_Elem, _Traits, _Alloc>&& _Right)
+	{	// return string + string
+	return (_STD move(_Right.insert(0, _Left)));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_string<_Elem, _Traits, _Alloc> operator+(
+		basic_string<_Elem, _Traits, _Alloc>&& _Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// return string + string
+	return (_STD move(_Left.append(_Right)));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_string<_Elem, _Traits, _Alloc> operator+(
+		basic_string<_Elem, _Traits, _Alloc>&& _Left,
+		basic_string<_Elem, _Traits, _Alloc>&& _Right)
+	{	// return string + string
+	if (_Right.size() <= _Left.capacity() - _Left.size()
+		|| _Right.capacity() - _Right.size() < _Left.size())
+		return (_STD move(_Left.append(_Right)));
+	else
+		return (_STD move(_Right.insert(0, _Left)));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_string<_Elem, _Traits, _Alloc> operator+(
+		const _Elem *_Left,
+		basic_string<_Elem, _Traits, _Alloc>&& _Right)
+	{	// return NTCS + string
+	return (_STD move(_Right.insert(0, _Left)));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_string<_Elem, _Traits, _Alloc> operator+(
+		const _Elem _Left,
+		basic_string<_Elem, _Traits, _Alloc>&& _Right)
+	{	// return character + string
+	return (_STD move(_Right.insert(0, 1, _Left)));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_string<_Elem, _Traits, _Alloc> operator+(
+		basic_string<_Elem, _Traits, _Alloc>&& _Left,
+		const _Elem *_Right)
+	{	// return string + NTCS
+	return (_STD move(_Left.append(_Right)));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_string<_Elem, _Traits, _Alloc> operator+(
+		basic_string<_Elem, _Traits, _Alloc>&& _Left,
+		const _Elem _Right)
+	{	// return string + character
+	return (_STD move(_Left.append(1, _Right)));
+	}
+ #endif /* _HAS_RVALUE_REFERENCES */
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator==(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// test for string equality
+	return (_Left.compare(_Right) == 0);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator==(
+		const _Elem * _Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// test for NTCS vs. string equality
+	return (_Right.compare(_Left) == 0);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator==(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const _Elem *_Right)
+	{	// test for string vs. NTCS equality
+	return (_Left.compare(_Right) == 0);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator!=(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// test for string inequality
+	return (!(_Left == _Right));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator!=(
+		const _Elem *_Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// test for NTCS vs. string inequality
+	return (!(_Left == _Right));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator!=(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const _Elem *_Right)
+	{	// test for string vs. NTCS inequality
+	return (!(_Left == _Right));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator<(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// test if string < string
+	return (_Left.compare(_Right) < 0);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator<(
+		const _Elem * _Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// test if NTCS < string
+	return (_Right.compare(_Left) > 0);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator<(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const _Elem *_Right)
+	{	// test if string < NTCS
+	return (_Left.compare(_Right) < 0);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator>(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// test if string > string
+	return (_Right < _Left);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator>(
+		const _Elem * _Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// test if NTCS > string
+	return (_Right < _Left);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator>(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const _Elem *_Right)
+	{	// test if string > NTCS
+	return (_Right < _Left);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator<=(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// test if string <= string
+	return (!(_Right < _Left));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator<=(
+		const _Elem * _Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// test if NTCS <= string
+	return (!(_Right < _Left));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator<=(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const _Elem *_Right)
+	{	// test if string <= NTCS
+	return (!(_Right < _Left));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator>=(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// test if string >= string
+	return (!(_Left < _Right));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator>=(
+		const _Elem * _Left,
+		const basic_string<_Elem, _Traits, _Alloc>& _Right)
+	{	// test if NTCS >= string
+	return (!(_Left < _Right));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	bool operator>=(
+		const basic_string<_Elem, _Traits, _Alloc>& _Left,
+		const _Elem *_Right)
+	{	// test if string >= NTCS
+	return (!(_Left < _Right));
+	}
+
+		// basic_string INSERTERS AND EXTRACTORS
+export
+template<class _Elem,
+	class _Traits,
+	class _Alloc>
+	basic_istream<_Elem, _Traits>& operator>>(
+		basic_istream<_Elem, _Traits> _REFREF _Istr,
+		basic_string<_Elem, _Traits, _Alloc>& _Str);
+
+export
+template<class _Elem,
+	class _Traits,
+	class _Alloc>
+	basic_istream<_Elem, _Traits>& getline(
+		basic_istream<_Elem, _Traits> _REFREF _Istr,
+		basic_string<_Elem, _Traits, _Alloc>& _Str,
+		const _Elem _Delim);
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_istream<_Elem, _Traits>& getline(
+		basic_istream<_Elem, _Traits> _REFREF _Istr,
+		basic_string<_Elem, _Traits, _Alloc>& _Str)
+	{	// get characters into string, discard newline
+	return (getline(_Istr, _Str, _Istr.widen('\n')));
+	}
+
+ #if _HAS_NEW_RVALUE_REFERENCES
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_istream<_Elem, _Traits>& operator>>(
+		basic_istream<_Elem, _Traits>& _Istr,
+		basic_string<_Elem, _Traits, _Alloc>& _Str)
+	{	// extract a string
+	return (_STD move(_Istr) >> _Str);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_istream<_Elem, _Traits>& getline(
+		basic_istream<_Elem, _Traits>& _Istr,
+		basic_string<_Elem, _Traits, _Alloc>& _Str,
+		const _Elem _Delim)
+	{	// get characters into string, discard delimiter
+	return (getline(_STD move(_Istr), _Str, _Delim));
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_istream<_Elem, _Traits>& getline(
+		basic_istream<_Elem, _Traits>& _Istr,
+		basic_string<_Elem, _Traits, _Alloc>& _Str)
+	{	// get characters into string, discard newline
+	return (getline(_STD move(_Istr), _Str, _Istr.widen('\n')));
+	}
+ #endif /* _HAS_NEW_RVALUE_REFERENCES */
+
+export
+template<class _Elem,
+	class _Traits,
+	class _Alloc>
+	basic_ostream<_Elem, _Traits>& operator<<(
+		basic_ostream<_Elem, _Traits>& _Ostr,
+		const basic_string<_Elem, _Traits, _Alloc>& _Str);
+
+ #if _HAS_RVALUE_REFERENCES
+
+ #if _HAS_NEW_RVALUE_REFERENCES
+
+ #else /* _HAS_NEW_RVALUE_REFERENCES */
+template<class _Elem,
+	class _Traits,
+	class _Alloc> inline
+	basic_ostream<_Elem, _Traits>& operator<<(
+		basic_ostream<_Elem, _Traits>&& _Ostr,
+		const basic_string<_Elem, _Traits, _Alloc>& _Str)
+	{	// insert a string
+	return (_Ostr << _Str);
+	}
+ #endif /* _HAS_NEW_RVALUE_REFERENCES */
+
+ #endif /* _HAS_RVALUE_REFERENCES */
+
+ #if _HAS_CPP0X
+inline int stoi(const string& _Str, size_t *_Idx = 0,
+	int _Base = 10)
+	{	// convert string to int
+	const char *_Ptr = _Str.c_str();
+	char *_Eptr;
+	int _Errno = 0;
+	long _Ans = _CSTD _Stolx(_Ptr, &_Eptr, _Base, &_Errno);
+
+	if (_Ptr == _Eptr)
+		_Xinvalid_argument("invalid stoi argument");
+	if (_Errno || _Ans < INT_MIN != INT_MAX < _Ans)
+		_Xout_of_range("stoi argument out of range");
+	if (_Idx != 0)
+		*_Idx = (size_t)(_Eptr - _Ptr);
+	return ((int)_Ans);
+	}
+
+inline long stol(const string& _Str, size_t *_Idx = 0,
+	int _Base = 10)
+	{	// convert string to long
+	const char *_Ptr = _Str.c_str();
+	char *_Eptr;
+	int _Errno = 0;
+	long _Ans = _CSTD _Stoulx(_Ptr, &_Eptr, _Base, &_Errno);
+
+	if (_Ptr == _Eptr)
+		_Xinvalid_argument("invalid stol argument");
+	if (_Errno)
+		_Xout_of_range("stol argument out of range");
+	if (_Idx != 0)
+		*_Idx = (size_t)(_Eptr - _Ptr);
+	return (_Ans);
+	}
+
+inline unsigned long stoul(const string& _Str, size_t *_Idx = 0,
+	int _Base = 10)
+	{	// convert string to unsigned long
+	const char *_Ptr = _Str.c_str();
+	char *_Eptr;
+	int _Errno = 0;
+	unsigned long _Ans = _CSTD _Stoulx(_Ptr, &_Eptr, _Base, &_Errno);
+
+	if (_Ptr == _Eptr)
+		_Xinvalid_argument("invalid stoul argument");
+	if (_Errno)
+		_Xout_of_range("stoul argument out of range");
+	if (_Idx != 0)
+		*_Idx = (size_t)(_Eptr - _Ptr);
+	return (_Ans);
+	}
+
+inline _Longlong stoll(const string& _Str, size_t *_Idx = 0,
+	int _Base = 10)
+	{	// convert string to long long
+	const char *_Ptr = _Str.c_str();
+	char *_Eptr;
+	int _Errno = 0;
+	_Longlong _Ans = _CSTD _Stollx(_Ptr, &_Eptr, _Base, &_Errno);
+
+	if (_Ptr == _Eptr)
+		_Xinvalid_argument("invalid stoll argument");
+	if (_Errno)
+		_Xout_of_range("stoll argument out of range");
+	if (_Idx != 0)
+		*_Idx = (size_t)(_Eptr - _Ptr);
+	return (_Ans);
+	}
+
+inline _ULonglong stoull(const string& _Str, size_t *_Idx = 0,
+	int _Base = 10)
+	{	// convert string to unsigned long long
+	const char *_Ptr = _Str.c_str();
+	int _Errno = 0;
+	char *_Eptr;
+	_ULonglong _Ans = _CSTD _Stoullx(_Ptr, &_Eptr, _Base, &_Errno);
+
+	if (_Ptr == _Eptr)
+		_Xinvalid_argument("invalid stoull argument");
+	if (_Errno)
+		_Xout_of_range("stoull argument out of range");
+	if (_Idx != 0)
+		*_Idx = (size_t)(_Eptr - _Ptr);
+	return (_Ans);
+	}
+
+inline float stof(const string& _Str, size_t *_Idx = 0)
+	{	// convert string to float
+	const char *_Ptr = _Str.c_str();
+	int _Errno = 0;
+	char *_Eptr;
+	float _Ans = _CSTD _Stofx(_Ptr, &_Eptr, 0, &_Errno);
+
+	if (_Ptr == _Eptr)
+		_Xinvalid_argument("invalid stof argument");
+	if (_Errno)
+		_Xout_of_range("stof argument out of range");
+	if (_Idx != 0)
+		*_Idx = (size_t)(_Eptr - _Ptr);
+	return (_Ans);
+	}
+
+inline double stod(const string& _Str, size_t *_Idx = 0)
+	{	// convert string to double
+	const char *_Ptr = _Str.c_str();
+	int _Errno = 0;
+	char *_Eptr;
+	double _Ans = _CSTD _Stodx(_Ptr, &_Eptr, 0, &_Errno);
+
+	if (_Ptr == _Eptr)
+		_Xinvalid_argument("invalid stod argument");
+	if (_Errno)
+		_Xout_of_range("stod argument out of range");
+	if (_Idx != 0)
+		*_Idx = (size_t)(_Eptr - _Ptr);
+	return (_Ans);
+	}
+
+inline long double stold(const string& _Str, size_t *_Idx = 0)
+	{	// convert string to long double
+	const char *_Ptr = _Str.c_str();
+	int _Errno = 0;
+	char *_Eptr;
+	long double _Ans = _CSTD _Stoldx(_Ptr, &_Eptr, 0, &_Errno);
+
+	if (_Ptr == _Eptr)
+		_Xinvalid_argument("invalid stold argument");
+	if (_Errno)
+		_Xout_of_range("stold argument out of range");
+	if (_Idx != 0)
+		*_Idx = (size_t)(_Eptr - _Ptr);
+	return (_Ans);
+	}
+
+ #if _HAS_DINKUM_CLIB
+ #define _LLFMT	"%ll"
+
+ #else /* _HAS_DINKUM_CLIB */
+ #define _LLFMT	"%ll"
+ #endif /* _HAS_DINKUM_CLIB */
+
+inline string to_string(_Longlong _Val)
+	{	// convert long long to string
+	char _Buf[2 * _MAX_INT_DIG];
+
+	_CSTD sprintf(_Buf, _LLFMT "d", _Val);
+	return (string(_Buf));
+	}
+
+inline string to_string(_ULonglong _Val)
+	{	// convert unsigned long long to string
+	char _Buf[2 * _MAX_INT_DIG];
+
+	_CSTD sprintf(_Buf, _LLFMT "u", _Val);
+	return (string(_Buf));
+	}
+
+inline string to_string(long double _Val)
+	{	// convert long double to string
+	char _Buf[_MAX_EXP_DIG + _MAX_SIG_DIG + 64];
+
+	_CSTD sprintf(_Buf, "%Lg", _Val);
+	return (string(_Buf));
+	}
+
+	// WIDE STRING VERSIONS
+inline string _Narrow_str(wstring _Str)
+	{	// convert wchar_t string to char string
+	string _Ans;
+
+	for (const wchar_t *_Ptr = _Str.c_str(); *_Ptr != 0; ++_Ptr)
+		_Ans.push_back((char)_CSTD wctob(*_Ptr));
+	return (_Ans);
+	}
+
+inline int stoi(const wstring& _Str, size_t *_Idx = 0,
+	int _Base = 10)
+	{	// convert wstring to int
+	return (stoi(_Narrow_str(_Str), _Idx, _Base));
+	}
+
+inline long stol(const wstring& _Str, size_t *_Idx = 0,
+	int _Base = 10)
+	{	// convert wstring to long
+	return (stol(_Narrow_str(_Str), _Idx, _Base));
+	}
+
+inline unsigned long stoul(const wstring& _Str, size_t *_Idx = 0,
+	int _Base = 10)
+	{	// convert wstring to unsigned long
+	return (stoul(_Narrow_str(_Str), _Idx, _Base));
+	}
+
+inline _Longlong stoll(const wstring& _Str, size_t *_Idx = 0,
+	int _Base = 10)
+	{	// convert wstring to long long
+	return (stoll(_Narrow_str(_Str), _Idx, _Base));
+	}
+
+inline _ULonglong stoull(const wstring& _Str, size_t *_Idx = 0,
+	int _Base = 10)
+	{	// convert wstring to unsigned long long
+	return (stoull(_Narrow_str(_Str), _Idx, _Base));
+	}
+
+inline float stof(const wstring& _Str, size_t *_Idx = 0)
+	{	// convert wstring to float
+	return (stof(_Narrow_str(_Str), _Idx));
+	}
+
+inline double stod(const wstring& _Str, size_t *_Idx = 0)
+	{	// convert wstring to double
+	return (stod(_Narrow_str(_Str), _Idx));
+	}
+
+inline long double stold(const wstring& _Str, size_t *_Idx = 0)
+	{	// convert wstring to long double
+	return (stold(_Narrow_str(_Str), _Idx));
+	}
+
+ #if _HAS_DINKUM_CLIB
+ #define _WLLFMT	L"%ll"
+
+ #else /* _HAS_DINKUM_CLIB */
+ #define _WLLFMT	L"%ll"
+ #endif /* _HAS_DINKUM_CLIB */
+
+inline wstring to_wstring(_Longlong _Val)
+	{	// convert long long to wstring
+	wchar_t _Buf[2 * _MAX_INT_DIG];
+
+	_CSTD swprintf(_Buf, sizeof (_Buf) / sizeof (_Buf[0]),
+		_WLLFMT L"d", _Val);
+	return (wstring(_Buf));
+	}
+
+inline wstring to_wstring(_ULonglong _Val)
+	{	// convert unsigned long long to wstring
+	wchar_t _Buf[2 * _MAX_INT_DIG];
+
+	_CSTD swprintf(_Buf, sizeof (_Buf) / sizeof (_Buf[0]),
+		_WLLFMT L"u", _Val);
+	return (wstring(_Buf));
+	}
+
+inline wstring to_wstring(long double _Val)
+	{	// convert long double to wstring
+	wchar_t _Buf[_MAX_EXP_DIG + _MAX_SIG_DIG + 64];
+
+	_CSTD swprintf(_Buf,sizeof (_Buf) / sizeof (_Buf[0]),
+		L"%Lg", _Val);
+	return (wstring(_Buf));
+	}
+ #endif /* _HAS_CPP0X */
+_STD_END
+#endif /* _STRING */
+
+/*
+ * Copyright (c) 1992-2010 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Consult your license regarding permissions and restrictions.
+V5.30:0009 */

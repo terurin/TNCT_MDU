@@ -1,0 +1,1023 @@
+// fstream standard header
+#ifndef _FSTREAM_
+#define _FSTREAM_
+#include <istream>
+
+_STD_BEGIN
+extern _Filet *_Fiopen(const char *, ios_base::openmode, int);
+extern _Filet *_Fiopen(const wchar_t *, ios_base::openmode, int);
+
+		// TEMPLATE FUNCTION _Fgetc
+template<class _Elem> inline
+	bool _Fgetc(_Elem& _Ch, _Filet *_File)
+	{	// get an element from a C stream
+	return (fread(&_Ch, sizeof (_Elem), 1, _File) == 1);
+	}
+
+template<> inline bool _Fgetc(char& _Byte, _Filet *_File)
+	{	// get a char element from a C stream
+	int _Meta;
+	if ((_Meta = fgetc(_File)) == EOF)
+		return (false);
+	else
+		{	// got one, convert to char
+		_Byte = (char)_Meta;
+		return (true);
+		}
+	}
+
+template<> inline bool _Fgetc(wchar_t& _Wchar, _Filet *_File)
+	{	// get a wchar_t element from a C stream
+	wint_t _Meta;
+	if ((_Meta = _CSTD fgetwc(_File)) == WEOF)
+		return (false);
+	else
+		{	// got one, convert to wchar_t
+		_Wchar = (wchar_t)_Meta;
+		return (true);
+		}
+	}
+
+		// TEMPLATE FUNCTION _Fputc
+template<class _Elem> inline
+	bool _Fputc(_Elem _Ch, _Filet *_File)
+	{	// put an element to a C stream
+	return (fwrite(&_Ch, 1, sizeof (_Elem), _File) == sizeof (_Elem));
+	}
+
+template<> inline bool _Fputc(char _Byte, _Filet *_File)
+	{	// put a char element to a C stream
+	return (fputc(_Byte, _File) != EOF);
+	}
+
+template<> inline bool _Fputc(wchar_t _Wchar, _Filet *_File)
+	{	// put a wchar_t element to a C stream
+	return (_CSTD fputwc(_Wchar, _File) != WEOF);
+	}
+
+		// TEMPLATE FUNCTION _Ungetc
+template<class _Elem> inline
+	bool _Ungetc(const _Elem& _Ch, _Filet *_File)
+	{	// put back an arbitrary element to a C stream (always fail)
+	return (false);
+	}
+
+template<> inline bool _Ungetc(const char& _Byte, _Filet *_File)
+	{	// put back a char element to a C stream
+	return (ungetc((unsigned char)_Byte, _File) != EOF);
+	}
+
+template<> inline bool _Ungetc(const signed char& _Byte, _Filet *_File)
+	{	// put back a signed char element to a C stream
+	return (ungetc((unsigned char)_Byte, _File) != EOF);
+	}
+
+template<> inline bool _Ungetc(const unsigned char& _Byte, _Filet *_File)
+	{	// put back an unsigned char element to a C stream
+	return (ungetc(_Byte, _File) != EOF);
+	}
+
+template<> inline bool _Ungetc(const wchar_t& _Wchar, _Filet *_File)
+	{	// put back a wchar_t element to a C stream
+	return (_CSTD ungetwc(_Wchar, _File) != WEOF);
+	}
+
+		// TEMPLATE CLASS basic_filebuf
+export
+template<class _Elem,
+	class _Traits>
+	class basic_filebuf
+		: public basic_streambuf<_Elem, _Traits>
+	{	// stream buffer associated with a C stream
+public:
+	typedef basic_filebuf<_Elem, _Traits> _Myt;
+	typedef basic_streambuf<_Elem, _Traits> _Mysb;
+	typedef typename _Traits::state_type _Myst;
+	typedef codecvt<_Elem, char, typename _Traits::state_type> _Cvt;
+
+	virtual ~basic_filebuf()
+		{	// destroy the object
+		if (_Myfile != 0)
+			_Reset_back();	// revert from _Mychar buffer
+		if (_Closef)
+			close();
+		}
+
+	basic_filebuf(_Filet *_File = 0)
+		: _Mysb()
+		{	// construct from pointer to C stream
+		_Init(_File, _Newfl);
+		}
+
+	typedef typename _Traits::int_type int_type;
+	typedef typename _Traits::pos_type pos_type;
+	typedef typename _Traits::off_type off_type;
+
+	basic_filebuf(_Uninitialized)
+		: _Mysb(_Noinit)
+		{	// construct uninitialized
+		}
+
+ #if _HAS_RVALUE_REFERENCES
+	basic_filebuf(_Myt&& _Right)
+		{	// construct by copying _Right
+		_Init(_Right._Myfile, _Newfl);	// match buffering styles
+		_Init((_Filet *)0, _Closefl);	// then make *this look closed
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		}
+
+	_Myt& operator=(_Myt&& _Right)
+		{	// assign from _Right
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		return (*this);
+		}
+
+	void _Assign_rv(_Myt&& _Right)
+		{	// assign by moving _Right
+		if (this != &_Right)
+			{	// different, worth moving
+			close();
+			this->swap(_Right);
+			}
+		}
+
+	void swap(_Myt& _Right)
+		{	// swap with _Right
+		if (this != &_Right)
+			{	// different, worth swapping
+			_Mysb::swap(_Right);
+			_STD swap(_Pcvt, _Right._Pcvt);
+			_STD swap(_Mychar, _Right._Mychar);
+			_STD swap(_Wrotesome, _Right._Wrotesome);
+			_STD swap(_State, _Right._State);
+			_STD swap(_Closef, _Right._Closef);
+			_STD swap(_Myfile, _Right._Myfile);
+			}
+		}
+
+	void swap(_Myt&& _Right)
+		{	// swap with _Right
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		}
+ #endif /* _HAS_RVALUE_REFERENCES */
+
+	enum _Initfl
+		{	// reasons for a call to _Init
+		_Newfl, _Openfl, _Closefl};
+
+	bool is_open() const
+		{	// test if C stream has been opened
+		return (_Myfile != 0);
+		}
+
+	_Myt *open(const char *_Filename,
+		ios_base::openmode _Mode,
+		int _Prot = (int)ios_base::_Openprot);
+
+ #if _HAS_CPP0X
+	_Myt *open(const string& _Str,
+		ios_base::openmode _Mode,
+		int _Prot = (int)ios_base::_Openprot)
+		{	// open a C stream with specified mode
+		return (open(_Str.c_str(), _Mode, _Prot));
+		}
+ #endif /* _HAS_CPP0X */
+
+	_Myt *open(const char *_Filename, ios_base::open_mode _Mode)
+		{	// open a C stream with specified mode (old style)
+		return (open(_Filename, (ios_base::openmode)_Mode));
+		}
+
+	_Myt *open(const wchar_t *_Filename,
+		ios_base::openmode _Mode,
+		int _Prot = (int)ios_base::_Openprot);
+
+ #if _HAS_CPP0X
+	_Myt *open(const wstring& _Str,
+		ios_base::openmode _Mode,
+		int _Prot = (int)ios_base::_Openprot)
+		{	// open a wide-named C stream -- EXTENSION
+		return (open(_Str.c_str(), _Mode, _Prot));
+		}
+ #endif /* _HAS_CPP0X */
+
+	_Myt *open(const wchar_t *_Filename,
+		ios_base::open_mode _Mode)
+		{	// open a wide-named C stream (old style) -- EXTENSION
+		return (open(_Filename, (ios_base::openmode)_Mode));
+		}
+
+	_Myt *close();
+
+ #if _HAS_DINKUM_CLIB
+
+ #else /* _HAS_DINKUM_CLIB */
+
+ #if _MULTI_THREAD && _FILE_OP_LOCKS
+	virtual void _Lock()
+		{	// lock file instead of stream buffer
+		_CSTD _Lockfile(_Myfile);
+		}
+
+	virtual void _Unlock()
+		{	// unlock file instead of stream buffer
+		_CSTD _Unlockfile(_Myfile);
+		}
+ #endif /* _MULTI_THREAD && _FILE_OP_LOCKS */
+
+ #endif /* _HAS_DINKUM_CLIB */
+
+ #if _HAS_TRADITIONAL_IOSTREAMS
+	enum
+		{	// constant for default file opening protection
+		_Openprot = 0666};
+
+	_Myt *attach(_FD_TYPE _Fd, const char *_Mode = "r+")
+		{	// open a C stream with C file descriptor and specified mode
+		_Filet *_File;
+		if (_Myfile != 0 || (_File = _CSTD fdopen(_Fd, (char *)_Mode)) == 0)
+			return (0);	// open failed
+
+		_Init(_File, _Openfl);
+		_Initcvt(&_USE(_Mysb::getloc(), _Cvt));
+		return (this);	// open succeeded
+		}
+
+	_Filet *stdiofile() const
+		{	// get pointer to C stream
+		return (_Myfile);
+		}
+
+	int fd() const
+		{	// get file descriptor for C stream
+		return (_CSTD fileno(_Myfile));
+		}
+ #endif /* _HAS_TRADITIONAL_IOSTREAMS */
+
+protected:
+	virtual int_type overflow(int_type _Meta =
+		_Traits::eof());
+
+	virtual int_type pbackfail(int_type _Meta =
+		_Traits::eof());
+
+	virtual int_type underflow();
+
+	virtual int_type uflow();
+
+	virtual pos_type seekoff(off_type _Off,
+		ios_base::seekdir _Way,
+		ios_base::openmode =
+			(ios_base::openmode)(ios_base::in | ios_base::out));
+
+	virtual pos_type seekpos(pos_type _Pos,
+		ios_base::openmode =
+			(ios_base::openmode)(ios_base::in | ios_base::out));
+
+	virtual _Mysb *setbuf(_Elem *_Buffer, streamsize _Count)
+		{	// offer _Buffer to C stream
+		if (_Myfile == 0 || setvbuf(_Myfile, (char *)_Buffer,
+			_Buffer == 0 && _Count == 0 ? _IONBF : _IOFBF,
+			(size_t)_Count * sizeof (_Elem)) != 0)
+			return (0);	// failed
+		else
+			{	// new buffer, reinitialize pointers
+			_Init(_Myfile, _Openfl);
+			return (this);
+			}
+		}
+
+	virtual int sync()
+		{	// synchronize C stream with external file
+		return (_Myfile == 0
+			|| _Traits::eq_int_type(_Traits::eof(), overflow())
+			|| 0 <= fflush(_Myfile) ? 0 : -1);
+		}
+
+	virtual void imbue(const locale& _Loc)
+		{	// set locale to argument (capture nontrivial codecvt facet)
+		_Initcvt(&_USE(_Loc, _Cvt));
+		}
+
+	void _Init(_Filet *_File, _Initfl _Which);
+
+	bool _Endwrite();
+
+	void _Initcvt(const _Cvt *_Newpcvt);
+
+private:
+	void _Reset_back()
+		{	// restore buffer after putback
+		if (_Mysb::eback() == &_Mychar)
+			_Mysb::setg(_Set_eback, _Set_egptr, _Set_egptr);
+		}
+
+	void _Set_back()
+		{	// set up putback area
+		if (_Mysb::eback() != &_Mychar)
+			{	// save current get buffer
+			_Set_eback = _Mysb::eback();
+			_Set_egptr = _Mysb::egptr();
+			}
+		_Mysb::setg(&_Mychar, &_Mychar, &_Mychar + 1);
+		}
+
+	_Elem *_Set_eback;	// saves eback() during one-element putback
+	_Elem *_Set_egptr;	// saves egptr()
+
+	const _Cvt *_Pcvt;	// pointer to codecvt facet (may be null)
+	_Elem _Mychar;	// putback character, when _Ungetc fails
+	bool _Wrotesome;	// true if homing sequence may be needed
+	typename _Traits::state_type _State;	// current conversion state
+	bool _Closef;	// true if C stream must be closed
+	_Filet *_Myfile;	// pointer to C stream
+	};
+
+ #if _HAS_RVALUE_REFERENCES
+	// basic_filebuf TEMPLATE OPERATORS
+template<class _Elem,
+	class _Traits> inline
+	void swap(basic_filebuf<_Elem, _Traits>& _Left,
+		basic_filebuf<_Elem, _Traits>& _Right)
+	{	// swap _Left and _Right basic_filebufs
+	_Left.swap(_Right);
+	}
+
+template<class _Elem,
+	class _Traits> inline
+	void swap(basic_filebuf<_Elem, _Traits>& _Left,
+		basic_filebuf<_Elem, _Traits>&& _Right)
+	{	// swap _Left and _Right basic_filebufs
+	typedef basic_filebuf<_Elem, _Traits> _Myt;
+	_Left.swap(_STD forward<_Myt>(_Right));
+	}
+
+template<class _Elem,
+	class _Traits> inline
+	void swap(basic_filebuf<_Elem, _Traits>&& _Left,
+		basic_filebuf<_Elem, _Traits>& _Right)
+	{	// swap _Left and _Right basic_filebuf
+	typedef basic_filebuf<_Elem, _Traits> _Myt;
+	_Right.swap(_STD forward<_Myt>(_Left));
+	}
+ #endif /* _HAS_RVALUE_REFERENCES */
+
+		// TEMPLATE CLASS basic_ifstream
+template<class _Elem,
+	class _Traits>
+	class basic_ifstream
+		: public basic_istream<_Elem, _Traits>
+	{	// input stream associated with a C stream
+public:
+	typedef basic_ifstream<_Elem, _Traits> _Myt;
+	typedef basic_istream<_Elem, _Traits> _Mybase;
+	typedef basic_filebuf<_Elem, _Traits> _Myfb;
+	typedef basic_ios<_Elem, _Traits> _Myios;
+
+	basic_ifstream()
+		: _Mybase(&_Filebuffer)
+		{	// construct unopened
+		}
+
+	explicit basic_ifstream(const char *_Filename,
+		ios_base::openmode _Mode = ios_base::in,
+		int _Prot = (int)ios_base::_Openprot)
+		: _Mybase(&_Filebuffer)
+		{	// construct with named file and specified mode
+		if (_Filebuffer.open(_Filename, _Mode | ios_base::in, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+
+ #if _HAS_CPP0X
+	explicit basic_ifstream(const string& _Str,
+		ios_base::openmode _Mode = ios_base::in,
+		int _Prot = (int)ios_base::_Openprot)
+		: _Mybase(&_Filebuffer)
+		{	// construct with named file and specified mode
+		if (_Filebuffer.open(_Str.c_str(), _Mode | ios_base::in, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+ #endif /* _HAS_CPP0X */
+
+	explicit basic_ifstream(const wchar_t *_Filename,
+		ios_base::openmode _Mode = ios_base::in,
+		int _Prot = (int)ios_base::_Openprot)
+		: _Mybase(&_Filebuffer)
+		{	// construct with wide-named file -- EXTENSION
+		if (_Filebuffer.open(_Filename, _Mode | ios_base::in, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+
+ #if _HAS_CPP0X
+	explicit basic_ifstream(const wstring& _Str,
+		ios_base::openmode _Mode = ios_base::in,
+		int _Prot = (int)ios_base::_Openprot)
+		: _Mybase(&_Filebuffer)
+		{	// construct with wide-named file -- EXTENSION
+		if (_Filebuffer.open(_Str.c_str(), _Mode | ios_base::in, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+ #endif /* _HAS_CPP0X */
+
+	explicit basic_ifstream(_Filet *_File)
+		: _Mybase(&_Filebuffer),
+			_Filebuffer(_File)
+		{	// construct with specified C stream
+		}
+
+ #if _HAS_TRADITIONAL_IOSTREAMS
+	explicit basic_ifstream(_FD_TYPE _Fd)
+		: _Mybase(&_Filebuffer),
+			_Filebuffer(_CSTD fdopen(_Fd, "r"))
+		{	// construct with C file descriptor
+		}
+ #endif /* _HAS_TRADITIONAL_IOSTREAMS */
+
+ #if _HAS_RVALUE_REFERENCES
+	basic_ifstream(_Myt&& _Right)
+		: _Mybase(&_Filebuffer)
+		{	// construct by moving _Right
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		}
+
+	_Myt& operator=(_Myt&& _Right)
+		{	// move from _Right
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		return (*this);
+		}
+
+	void _Assign_rv(_Myt&& _Right)
+		{	// assign by moving _Right
+		if (this != &_Right)
+			{	// different, worth moving
+			_Filebuffer.close();
+			this->swap(_Right);
+			}
+		}
+
+	void swap(_Myt& _Right)
+		{	// swap with _Right
+		if (this != &_Right)
+			{	// different, swap base and buffer
+			_Mybase::swap(_Right);
+			_Filebuffer.swap(_Right._Filebuffer);
+			}
+		}
+
+	void swap(_Myt&& _Right)
+		{	// swap with _Right
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		}
+ #endif /* _HAS_RVALUE_REFERENCES */
+
+ #if _HAS_TRADITIONAL_IOSTREAMS
+	_Myt *attach(_FD_TYPE _Fd, const char *_Mode = "r")
+		{	// open a C stream with C file descriptor and specified mode
+		return (_Filebuffer.attach(_Fd, _Mode) != 0 ? this : 0);
+		}
+ #endif /* _HAS_TRADITIONAL_IOSTREAMS */
+
+	void open(const wchar_t *_Filename,
+		ios_base::openmode _Mode = ios_base::in,
+		int _Prot = (int)ios_base::_Openprot)
+		{	// open a wide-named C stream -- EXTENSION
+		if (_Filebuffer.open(_Filename, _Mode | ios_base::in, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		else
+			_Myios::clear();	// added with C++0X
+		}
+
+ #if _HAS_CPP0X
+	void open(const wstring& _Str,
+		ios_base::openmode _Mode = ios_base::in,
+		int _Prot = (int)ios_base::_Openprot)
+		{	// open a wide-named C stream -- EXTENSION
+		open(_Str.c_str(), _Mode, _Prot);
+		}
+ #endif /* _HAS_CPP0X */
+
+	void open(const wchar_t *_Filename, ios_base::open_mode _Mode)
+		{	// open wide-named file (old style) -- EXTENSION
+		open(_Filename, (ios_base::openmode)_Mode);
+		}
+
+	virtual ~basic_ifstream()
+		{	// destroy the object
+		}
+
+	_Myfb *rdbuf() const
+		{	// return pointer to file buffer
+		return ((_Myfb *)&_Filebuffer);
+		}
+
+	bool is_open() const
+		{	// test if C stream has been opened
+		return (_Filebuffer.is_open());
+		}
+
+	void open(const char *_Filename,
+		ios_base::openmode _Mode = ios_base::in,
+		int _Prot = (int)ios_base::_Openprot)
+		{	// open a C stream with specified mode
+		if (_Filebuffer.open(_Filename, _Mode | ios_base::in, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		else
+			_Myios::clear();	// added with C++0X
+		}
+
+ #if _HAS_CPP0X
+	void open(const string& _Str,
+		ios_base::openmode _Mode = ios_base::in,
+		int _Prot = (int)ios_base::_Openprot)
+		{	// open a C stream with specified mode
+		open(_Str.c_str(), _Mode, _Prot);
+		}
+ #endif /* _HAS_CPP0X */
+
+	void open(const char *_Filename, ios_base::open_mode _Mode)
+		{	// open named file with specified mode (old style)
+		open(_Filename, (ios_base::openmode)_Mode);
+		}
+
+	void close()
+		{	// close the C stream
+		if (_Filebuffer.close() == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+
+private:
+	_Myfb _Filebuffer;	// the file buffer
+	};
+
+ #if _HAS_RVALUE_REFERENCES
+	// basic_ifstream TEMPLATE OPERATORS
+template<class _Elem,
+	class _Traits> inline
+	void swap(basic_ifstream<_Elem, _Traits>& _Left,
+		basic_ifstream<_Elem, _Traits>& _Right)
+	{	// swap _Left and _Right basic_ifstreams
+	_Left.swap(_Right);
+	}
+
+template<class _Elem,
+	class _Traits> inline
+	void swap(basic_ifstream<_Elem, _Traits>& _Left,
+		basic_ifstream<_Elem, _Traits>&& _Right)
+	{	// swap _Left and _Right basic_ifstreams
+	typedef basic_ifstream<_Elem, _Traits> _Myt;
+	_Left.swap(_STD forward<_Myt>(_Right));
+	}
+
+template<class _Elem,
+	class _Traits> inline
+	void swap(basic_ifstream<_Elem, _Traits>&& _Left,
+		basic_ifstream<_Elem, _Traits>& _Right)
+	{	// swap _Left and _Right basic_ifstreams
+	typedef basic_ifstream<_Elem, _Traits> _Myt;
+	_Right.swap(_STD forward<_Myt>(_Left));
+	}
+ #endif /* _HAS_RVALUE_REFERENCES */
+
+		// TEMPLATE CLASS basic_ofstream
+template<class _Elem,
+	class _Traits>
+	class basic_ofstream
+		: public basic_ostream<_Elem, _Traits>
+	{	// output stream associated with a C stream
+public:
+	typedef basic_ofstream<_Elem, _Traits> _Myt;
+	typedef basic_ostream<_Elem, _Traits> _Mybase;
+	typedef basic_filebuf<_Elem, _Traits> _Myfb;
+	typedef basic_ios<_Elem, _Traits> _Myios;
+
+	basic_ofstream()
+		: _Mybase(&_Filebuffer)
+		{	// construct unopened
+		}
+
+	explicit basic_ofstream(const char *_Filename,
+		ios_base::openmode _Mode = ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		: _Mybase(&_Filebuffer)
+		{	// construct with named file and specified mode
+		if (_Filebuffer.open(_Filename, _Mode | ios_base::out, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+
+ #if _HAS_CPP0X
+	explicit basic_ofstream(const string& _Str,
+		ios_base::openmode _Mode = ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		: _Mybase(&_Filebuffer)
+		{	// construct with named file and specified mode
+		if (_Filebuffer.open(_Str.c_str(), _Mode | ios_base::out, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+ #endif /* _HAS_CPP0X */
+
+	explicit basic_ofstream(const wchar_t *_Filename,
+		ios_base::openmode _Mode = ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		: _Mybase(&_Filebuffer)
+		{	// construct with wide-named file -- EXTENSION
+		if (_Filebuffer.open(_Filename, _Mode | ios_base::out, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+
+ #if _HAS_CPP0X
+	explicit basic_ofstream(const wstring& _Str,
+		ios_base::openmode _Mode = ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		: _Mybase(&_Filebuffer)
+		{	// construct with wide-named file -- EXTENSION
+		if (_Filebuffer.open(_Str.c_str(), _Mode | ios_base::out, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+ #endif /* _HAS_CPP0X */
+
+	explicit basic_ofstream(_Filet *_File)
+		: _Mybase(&_Filebuffer),
+			_Filebuffer(_File)
+		{	// construct with specified C stream
+		}
+
+ #if _HAS_TRADITIONAL_IOSTREAMS
+	explicit basic_ofstream(_FD_TYPE _Fd)
+		: _Mybase(&_Filebuffer),
+			_Filebuffer(_CSTD fdopen(_Fd, "w"))
+		{	// construct with C file descriptor
+		}
+ #endif /* _HAS_TRADITIONAL_IOSTREAMS */
+
+ #if _HAS_RVALUE_REFERENCES
+	basic_ofstream(_Myt&& _Right)
+		: _Mybase(&_Filebuffer)
+		{	// construct by moving _Right
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		}
+
+	_Myt& operator=(_Myt&& _Right)
+		{	// move from _Right
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		return (*this);
+		}
+
+	void _Assign_rv(_Myt&& _Right)
+		{	// assign by moving _Right
+		if (this != &_Right)
+			{	// different, worth moving
+			_Filebuffer.close();
+			this->swap(_Right);
+			}
+		}
+
+	void swap(_Myt& _Right)
+		{	// swap with _Right
+		if (this != &_Right)
+			{	// different, swap base and buffer
+			_Mybase::swap(_Right);
+			_Filebuffer.swap(_Right._Filebuffer);
+			}
+		}
+
+	void swap(_Myt&& _Right)
+		{	// swap with _Right
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		}
+ #endif /* _HAS_RVALUE_REFERENCES */
+
+ #if _HAS_TRADITIONAL_IOSTREAMS
+	_Myt *attach(_FD_TYPE _Fd, const char *_Mode = "w")
+		{	// open a C stream with C file descriptor and specified mode
+		return (_Filebuffer.attach(_Fd, _Mode) != 0 ? this : 0);
+		}
+ #endif /* _HAS_TRADITIONAL_IOSTREAMS */
+
+	void open(const wchar_t *_Filename,
+		ios_base::openmode _Mode = ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		{	// open a wide-named C stream -- EXTENSION
+		if (_Filebuffer.open(_Filename, _Mode | ios_base::out, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		else
+			_Myios::clear();	// added with C++0X
+		}
+
+ #if _HAS_CPP0X
+	void open(const wstring& _Str,
+		ios_base::openmode _Mode = ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		{	// open a wide-named C stream -- EXTENSION
+		open(_Str.c_str(), _Mode, _Prot);
+		}
+ #endif /* _HAS_CPP0X */
+
+	void open(const wchar_t *_Filename, ios_base::open_mode _Mode)
+		{	// open a wide-named C stream (old style) -- EXTENSION
+		open(_Filename, (ios_base::openmode)_Mode);
+		}
+
+	virtual ~basic_ofstream()
+		{	// destroy the object
+		}
+
+	_Myfb *rdbuf() const
+		{	// return pointer to file buffer
+		return ((_Myfb *)&_Filebuffer);
+		}
+
+	bool is_open() const
+		{	// test if C stream has been opened
+		return (_Filebuffer.is_open());
+		}
+
+	void open(const char *_Filename,
+		ios_base::openmode _Mode = ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		{	// open a C stream with specified mode
+		if (_Filebuffer.open(_Filename, _Mode | ios_base::out, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		else
+			_Myios::clear();	// added with C++0X
+		}
+
+ #if _HAS_CPP0X
+	void open(const string& _Str,
+		ios_base::openmode _Mode = ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		{	// open a C stream with specified mode
+		open(_Str.c_str(), _Mode, _Prot);
+		}
+ #endif /* _HAS_CPP0X */
+
+	void open(const char *_Filename, ios_base::open_mode _Mode)
+		{	// open a C stream with specified mode (old style)
+		open(_Filename, (ios_base::openmode)_Mode);
+		}
+
+	void close()
+		{	// close the C stream
+		if (_Filebuffer.close() == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+
+private:
+	_Myfb _Filebuffer;	// the file buffer
+	};
+
+ #if _HAS_RVALUE_REFERENCES
+	// basic_ofstream TEMPLATE OPERATORS
+template<class _Elem,
+	class _Traits> inline
+	void swap(basic_ofstream<_Elem, _Traits>& _Left,
+		basic_ofstream<_Elem, _Traits>& _Right)
+	{	// swap _Left and _Right basic_ofstreams
+	_Left.swap(_Right);
+	}
+
+template<class _Elem,
+	class _Traits> inline
+	void swap(basic_ofstream<_Elem, _Traits>& _Left,
+		basic_ofstream<_Elem, _Traits>&& _Right)
+	{	// swap _Left and _Right basic_ofstreams
+	typedef basic_ofstream<_Elem, _Traits> _Myt;
+	_Left.swap(_STD forward<_Myt>(_Right));
+	}
+
+template<class _Elem,
+	class _Traits> inline
+	void swap(basic_ofstream<_Elem, _Traits>&& _Left,
+		basic_ofstream<_Elem, _Traits>& _Right)
+	{	// swap _Left and _Right basic_ofstreams
+	typedef basic_ofstream<_Elem, _Traits> _Myt;
+	_Right.swap(_STD forward<_Myt>(_Left));
+	}
+ #endif /* _HAS_RVALUE_REFERENCES */
+
+		// TEMPLATE CLASS basic_fstream
+template<class _Elem,
+	class _Traits>
+	class basic_fstream
+		: public basic_iostream<_Elem, _Traits>
+	{	// input/output stream associated with a C stream
+public:
+	typedef basic_fstream<_Elem, _Traits> _Myt;
+	typedef basic_iostream<_Elem, _Traits> _Mybase;
+	typedef basic_filebuf<_Elem, _Traits> _Myfb;
+	typedef basic_ios<_Elem, _Traits> _Myios;
+	typedef _Elem char_type;
+	typedef _Traits traits_type;
+	typedef typename _Traits::int_type int_type;
+	typedef typename _Traits::pos_type pos_type;
+	typedef typename _Traits::off_type off_type;
+
+	basic_fstream()
+		: _Mybase(&_Filebuffer)
+		{	// construct unopened
+		}
+
+	explicit basic_fstream(const char *_Filename,
+		ios_base::openmode _Mode = ios_base::in | ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		: _Mybase(&_Filebuffer)
+		{	// construct with named file and specified mode
+		if (_Filebuffer.open(_Filename, _Mode, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+
+ #if _HAS_CPP0X
+	explicit basic_fstream(const string& _Str,
+		ios_base::openmode _Mode = ios_base::in | ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		: _Mybase(&_Filebuffer)
+		{	// construct with named file and specified mode
+		if (_Filebuffer.open(_Str.c_str(), _Mode, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+ #endif /* _HAS_CPP0X */
+
+	explicit basic_fstream(const wchar_t *_Filename,
+		ios_base::openmode _Mode = ios_base::in | ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		: _Mybase(&_Filebuffer)
+		{	// construct with wide-named file -- EXTENSION
+		if (_Filebuffer.open(_Filename, _Mode, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+
+ #if _HAS_CPP0X
+	explicit basic_fstream(const wstring& _Str,
+		ios_base::openmode _Mode = ios_base::in | ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		: _Mybase(&_Filebuffer)
+		{	// construct with wide-named file -- EXTENSION
+		if (_Filebuffer.open(_Str.c_str(), _Mode, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+ #endif /* _HAS_CPP0X */
+
+	explicit basic_fstream(_Filet *_File)
+		: _Mybase(&_Filebuffer),
+			_Filebuffer(_File)
+		{	// construct with specified C stream
+		}
+
+ #if _HAS_TRADITIONAL_IOSTREAMS
+	explicit basic_fstream(_FD_TYPE _Fd)
+		: _Mybase(&_Filebuffer),
+			_Filebuffer(_CSTD fdopen(_Fd, "r+"))
+		{	// construct with C file descriptor
+		}
+ #endif /* _HAS_TRADITIONAL_IOSTREAMS */
+
+ #if _HAS_RVALUE_REFERENCES
+	basic_fstream(_Myt&& _Right)
+		: _Mybase(&_Filebuffer)
+		{	// construct by moving _Right
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		}
+
+	_Myt& operator=(_Myt&& _Right)
+		{	// move from _Right
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		return (*this);
+		}
+
+	void _Assign_rv(_Myt&& _Right)
+		{	// assign by moving _Right
+		if (this != &_Right)
+			{	// different, worth moving
+			_Filebuffer.close();
+			this->swap(_Right);
+			}
+		}
+
+	void swap(_Myt& _Right)
+		{	// swap with _Right
+		if (this != &_Right)
+			{	// different, swap base and buffer
+			_Mybase::swap(_Right);
+			_Filebuffer.swap(_Right._Filebuffer);
+			}
+		}
+
+	void swap(_Myt&& _Right)
+		{	// swap with _Right
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		}
+ #endif /* _HAS_RVALUE_REFERENCES */
+
+ #if _HAS_TRADITIONAL_IOSTREAMS
+	_Myt *attach(_FD_TYPE _Fd, const char *_Mode = "r+")
+		{	// open a C stream with C file descriptor and specified mode
+		return (_Filebuffer.attach(_Fd, _Mode) != 0 ? this : 0);
+		}
+ #endif /* _HAS_TRADITIONAL_IOSTREAMS */
+
+	void open(const wchar_t *_Filename,
+		ios_base::openmode _Mode = ios_base::in | ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		{	// open a wide-named C stream -- EXTENSION
+		if (_Filebuffer.open(_Filename, _Mode, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		else
+			_Myios::clear();	// added with C++0X
+		}
+
+ #if _HAS_CPP0X
+	void open(const wstring& _Str,
+		ios_base::openmode _Mode = ios_base::in | ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		{	// open a wide-named C stream -- EXTENSION
+		open(_Str.c_str(), _Mode, _Prot);
+		}
+ #endif /* _HAS_CPP0X */
+
+	void open(const wchar_t *_Filename, ios_base::open_mode _Mode)
+		{	// open a wide-named C stream (old style) -- EXTENSION
+		open(_Filename, (ios_base::openmode)_Mode);
+		}
+
+	virtual ~basic_fstream()
+		{	// destroy the object
+		}
+
+	_Myfb *rdbuf() const
+		{	// return pointer to file buffer
+		return ((_Myfb *)&_Filebuffer);
+		}
+
+	bool is_open() const
+		{	// test if C stream has been opened
+		return (_Filebuffer.is_open());
+		}
+
+	void open(const char *_Filename,
+		ios_base::openmode _Mode = ios_base::in | ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		{	// open a C stream with specified mode
+		if (_Filebuffer.open(_Filename, _Mode, _Prot) == 0)
+			_Myios::setstate(ios_base::failbit);
+		else
+			_Myios::clear();	// added with C++0X
+		}
+
+ #if _HAS_CPP0X
+	void open(const string& _Str,
+		ios_base::openmode _Mode = ios_base::in | ios_base::out,
+		int _Prot = (int)ios_base::_Openprot)
+		{	// open a C stream with specified mode
+		open(_Str.c_str(), _Mode, _Prot);
+		}
+ #endif /* _HAS_CPP0X */
+
+	void open(const char *_Filename, ios_base::open_mode _Mode)
+		{	// open a C stream with specified mode (old style)
+		open(_Filename, (ios_base::openmode)_Mode);
+		}
+
+	void close()
+		{	// close the C stream
+		if (_Filebuffer.close() == 0)
+			_Myios::setstate(ios_base::failbit);
+		}
+
+private:
+	_Myfb _Filebuffer;	// the file buffer
+	};
+
+ #if _HAS_RVALUE_REFERENCES
+	// basic_fstream TEMPLATE OPERATORS
+template<class _Elem,
+	class _Traits> inline
+	void swap(basic_fstream<_Elem, _Traits>& _Left,
+		basic_fstream<_Elem, _Traits>& _Right)
+	{	// swap _Left and _Right basic_fstreams
+	_Left.swap(_Right);
+	}
+
+template<class _Elem,
+	class _Traits> inline
+	void swap(basic_fstream<_Elem, _Traits>& _Left,
+		basic_fstream<_Elem, _Traits>&& _Right)
+	{	// swap _Left and _Right basic_fstreams
+	typedef basic_fstream<_Elem, _Traits> _Myt;
+	_Left.swap(_STD forward<_Myt>(_Right));
+	}
+
+template<class _Elem,
+	class _Traits> inline
+	void swap(basic_fstream<_Elem, _Traits>&& _Left,
+		basic_fstream<_Elem, _Traits>& _Right)
+	{	// swap _Left and _Right basic_fstreams
+	typedef basic_fstream<_Elem, _Traits> _Myt;
+	_Right.swap(_STD forward<_Myt>(_Left));
+	}
+ #endif /* _HAS_RVALUE_REFERENCES */
+_STD_END
+#endif /* _FSTREAM_ */
+
+/*
+ * Copyright (c) 1992-2010 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Consult your license regarding permissions and restrictions.
+V5.30:0009 */

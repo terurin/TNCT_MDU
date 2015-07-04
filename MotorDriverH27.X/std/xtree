@@ -1,0 +1,1176 @@
+// xtree internal header
+#ifndef _XTREE_
+#define _XTREE_
+#include <xfunctional>
+#include <memory>
+#include <stdexcept>
+
+_STD_BEGIN
+		// TEMPLATE CLASS _Tree_unchecked_const_iterator
+template<class _Mytree,
+	class _Base = _Iterator_base0>
+	class _Tree_unchecked_const_iterator
+		: public _Iterator012<bidirectional_iterator_tag,
+			typename _Mytree::value_type,
+			typename _Mytree::difference_type,
+			typename _Mytree::const_pointer,
+			typename _Mytree::const_reference,
+			_Base>
+	{	// unchecked iterator for nonmutable tree
+public:
+	typedef _Tree_unchecked_const_iterator<_Mytree, _Base> _Myiter;
+	typedef bidirectional_iterator_tag iterator_category;
+
+	typedef typename _Mytree::_Nodeptr _Nodeptr;
+	typedef typename _Mytree::value_type value_type;
+	typedef typename _Mytree::difference_type difference_type;
+	typedef typename _Mytree::const_pointer pointer;
+	typedef typename _Mytree::const_reference reference;
+
+	_Tree_unchecked_const_iterator()
+		: _Ptr(0)
+		{	// construct with null node pointer
+		}
+
+	_Tree_unchecked_const_iterator(_Nodeptr _Pnode, const _Mytree *_Plist)
+		: _Ptr(_Pnode)
+		{	// construct with node pointer _Pnode
+		this->_Adopt(_Plist);
+		}
+
+	reference operator*() const
+		{	// return designated value
+		return (_Mytree::_Myval(_Ptr));
+		}
+
+	pointer operator->() const
+		{	// return pointer to class object
+		return (&**this);
+		}
+
+	_Myiter& operator++()
+		{	// preincrement
+		if (_Mytree::_Isnil(_Ptr))
+			;	// end() shouldn't be incremented, don't move
+		else if (!_Mytree::_Isnil(_Mytree::_Right(_Ptr)))
+			_Ptr = _Mytree::_Min(
+				_Mytree::_Right(_Ptr));	// ==> smallest of right subtree
+		else
+			{	// climb looking for right subtree
+			_Nodeptr _Pnode;
+			while (!_Mytree::_Isnil(_Pnode = _Mytree::_Parent(_Ptr))
+				&& _Ptr == _Mytree::_Right(_Pnode))
+				_Ptr = _Pnode;	// ==> parent while right subtree
+			_Ptr = _Pnode;	// ==> parent (head if end())
+			}
+		return (*this);
+		}
+
+	_Myiter operator++(int)
+		{	// postincrement
+		_Myiter _Tmp = *this;
+		++*this;
+		return (_Tmp);
+		}
+
+	_Myiter& operator--()
+		{	// predecrement
+		if (_Mytree::_Isnil(_Ptr))
+			_Ptr = _Mytree::_Right(_Ptr);	// end() ==> rightmost
+		else if (!_Mytree::_Isnil(_Mytree::_Left(_Ptr)))
+			_Ptr = _Mytree::_Max(
+				_Mytree::_Left(_Ptr));	// ==> largest of left subtree
+		else
+			{	// climb looking for left subtree
+			_Nodeptr _Pnode;
+			while (!_Mytree::_Isnil(_Pnode = _Mytree::_Parent(_Ptr))
+				&& _Ptr == _Mytree::_Left(_Pnode))
+				_Ptr = _Pnode;	// ==> parent while left subtree
+			if (_Mytree::_Isnil(_Ptr))
+				;	// begin() shouldn't be decremented, don't move
+			else
+				_Ptr = _Pnode;	// ==> parent if not head
+			}
+		return (*this);
+		}
+
+	_Myiter operator--(int)
+		{	// postdecrement
+		_Myiter _Tmp = *this;
+		--*this;
+		return (_Tmp);
+		}
+
+	bool operator==(const _Myiter& _Right) const
+		{	// test for iterator equality
+		return (_Ptr == _Right._Ptr);
+		}
+
+	bool operator!=(const _Myiter& _Right) const
+		{	// test for iterator inequality
+		return (!(*this == _Right));
+		}
+
+	_Nodeptr _Mynode() const
+		{	// return node pointer
+		return (_Ptr);
+		}
+
+	_Nodeptr _Ptr;	// pointer to node
+	};
+
+	// TEMPLATE CLASS _Tree_unchecked_iterator
+template<class _Mytree>
+	class _Tree_unchecked_iterator
+		: public _Tree_unchecked_const_iterator<_Mytree>
+	{	// unchecked iterator for mutable tree
+public:
+	typedef _Tree_unchecked_iterator<_Mytree> _Myiter;
+	typedef _Tree_unchecked_const_iterator<_Mytree> _Mybase;
+	typedef bidirectional_iterator_tag iterator_category;
+
+	typedef typename _Mytree::_Nodeptr _Nodeptr;
+	typedef typename _Mytree::value_type value_type;
+	typedef typename _Mytree::difference_type difference_type;
+	typedef typename _Mytree::pointer pointer;
+	typedef typename _Mytree::reference reference;
+
+	_Tree_unchecked_iterator()
+		{	// construct with null node
+		}
+
+	_Tree_unchecked_iterator(_Nodeptr _Pnode, const _Mytree *_Plist)
+		: _Mybase(_Pnode, _Plist)
+		{	// construct with node pointer _Pnode
+		}
+
+	reference operator*() const
+		{	// return designated value
+		return ((reference)**(_Mybase *)this);
+		}
+
+	pointer operator->() const
+		{	// return pointer to class object
+		return (&**this);
+		}
+
+	_Myiter& operator++()
+		{	// preincrement
+		++(*(_Mybase *)this);
+		return (*this);
+		}
+
+	_Myiter operator++(int)
+		{	// postincrement
+		_Myiter _Tmp = *this;
+		++*this;
+		return (_Tmp);
+		}
+
+	_Myiter& operator--()
+		{	// predecrement
+		--(*(_Mybase *)this);
+		return (*this);
+		}
+
+	_Myiter operator--(int)
+		{	// postdecrement
+		_Myiter _Tmp = *this;
+		--*this;
+		return (_Tmp);
+		}
+	};
+
+	// TEMPLATE CLASS _Tree_const_iterator
+template<class _Mytree>
+	class _Tree_const_iterator
+		: public _Tree_unchecked_const_iterator<_Mytree, _Iterator_base>
+	{	// iterator for nonmutable tree
+public:
+	typedef _Tree_const_iterator<_Mytree> _Myiter;
+	typedef _Tree_unchecked_const_iterator<_Mytree, _Iterator_base> _Mybase;
+	typedef bidirectional_iterator_tag iterator_category;
+
+	typedef typename _Mytree::_Nodeptr _Nodeptr;
+	typedef typename _Mytree::value_type value_type;
+	typedef typename _Mytree::difference_type difference_type;
+	typedef typename _Mytree::const_pointer pointer;
+	typedef typename _Mytree::const_reference reference;
+
+	_Tree_const_iterator()
+		: _Mybase()
+		{	// construct with null node pointer
+		}
+
+	_Tree_const_iterator(_Nodeptr _Pnode, const _Mytree *_Plist)
+		: _Mybase(_Pnode, _Plist)
+		{	// construct with node pointer _Pnode
+		}
+
+	typedef _Tree_unchecked_const_iterator<_Mytree> _Unchecked_type;
+
+	_Myiter& _Rechecked(_Unchecked_type _Right)
+		{	// reset from unchecked iterator
+		this->_Ptr = _Right._Ptr;
+		return (*this);
+		}
+
+	_Unchecked_type _Unchecked() const
+		{	// make an unchecked iterator
+		return (_Unchecked_type(this->_Ptr, (_Mytree *)this->_Getcont()));
+		}
+
+	reference operator*() const
+		{	// return designated value
+ #if _ITERATOR_DEBUG_LEVEL == 2
+		if (this->_Getcont() == 0
+			|| this->_Ptr == 0
+			|| this->_Ptr == ((_Mytree *)this->_Getcont())->_Myhead)
+			{	// report error
+			_DEBUG_ERROR("map/set iterator not dereferencable");
+			_SCL_SECURE_OUT_OF_RANGE;
+			}
+
+ #elif _ITERATOR_DEBUG_LEVEL == 1
+		_SCL_SECURE_VALIDATE(this->_Getcont() != 0 && this->_Ptr != 0);
+		_SCL_SECURE_VALIDATE_RANGE(this->_Ptr !=
+			((_Mytree *)this->_Getcont())->_Myhead);
+ #endif /* _ITERATOR_DEBUG_LEVEL */
+
+		return (_Mytree::_Myval(this->_Ptr));
+		}
+
+	_Myiter& operator++()
+		{	// preincrement
+ #if _ITERATOR_DEBUG_LEVEL == 2
+		if (this->_Getcont() == 0
+			|| this->_Ptr == 0
+			|| _Mytree::_Isnil(this->_Ptr))
+			{	// report error
+			_DEBUG_ERROR("map/set iterator not incrementable");
+			_SCL_SECURE_OUT_OF_RANGE;
+			}
+
+ #elif _ITERATOR_DEBUG_LEVEL == 1
+		_SCL_SECURE_VALIDATE(this->_Getcont() != 0 && this->_Ptr != 0);
+		_SCL_SECURE_VALIDATE_RANGE(!_Mytree::_Isnil(this->_Ptr));
+ #endif /* _ITERATOR_DEBUG_LEVEL */
+
+		++(*(_Mybase *)this);
+		return (*this);
+		}
+
+	_Myiter operator++(int)
+		{	// postincrement
+		_Myiter _Tmp = *this;
+		++*this;
+		return (_Tmp);
+		}
+
+	_Myiter& operator--()
+		{	// predecrement
+ #if _ITERATOR_DEBUG_LEVEL == 2
+		if (this->_Getcont() == 0
+			|| this->_Ptr == 0)
+			{	// report error
+			_DEBUG_ERROR("map/set iterator not decrementable");
+			_SCL_SECURE_OUT_OF_RANGE;
+			}
+
+		_Nodeptr _Ptrsav = this->_Ptr;
+		--(*(_Mybase *)this);
+		if (_Ptrsav == this->_Ptr)
+			{	// report error
+			_DEBUG_ERROR("map/set iterator not decrementable");
+			_SCL_SECURE_OUT_OF_RANGE;
+			}
+
+ #elif _ITERATOR_DEBUG_LEVEL == 1
+		_SCL_SECURE_VALIDATE(this->_Getcont() != 0 && this->_Ptr != 0);
+
+		_Nodeptr _Ptrsav = this->_Ptr;
+		--(*(_Mybase *)this);
+		_SCL_SECURE_VALIDATE(_Ptrsav != this->_Ptr);
+
+ #else /* _ITERATOR_DEBUG_LEVEL == 0 */
+		--(*(_Mybase *)this);
+ #endif /* _ITERATOR_DEBUG_LEVEL */
+
+		return (*this);
+		}
+
+	_Myiter operator--(int)
+		{	// postdecrement
+		_Myiter _Tmp = *this;
+		--*this;
+		return (_Tmp);
+		}
+
+	bool operator==(const _Myiter& _Right) const
+		{	// test for iterator equality
+ #if _ITERATOR_DEBUG_LEVEL == 2
+		if (this->_Getcont() == 0
+			|| this->_Getcont() != _Right._Getcont())
+			{	// report error
+			_DEBUG_ERROR("map/set iterators incompatible");
+			_SCL_SECURE_INVALID_ARGUMENT;
+			}
+
+ #elif _ITERATOR_DEBUG_LEVEL == 1
+		_SCL_SECURE_VALIDATE(this->_Getcont() != 0
+			&& this->_Getcont() == _Right._Getcont());
+ #endif /* _ITERATOR_DEBUG_LEVEL */
+
+		return (this->_Ptr == _Right._Ptr);
+		}
+
+	bool operator!=(const _Myiter& _Right) const
+		{	// test for iterator inequality
+		return (!(*this == _Right));
+		}
+	};
+
+template<class _Mytree> inline
+	typename _Tree_const_iterator<_Mytree>::_Unchecked_type
+		_Unchecked(_Tree_const_iterator<_Mytree> _Iter)
+	{	// convert to unchecked
+	return (_Iter._Unchecked());
+	}
+
+template<class _Mytree> inline
+	_Tree_const_iterator<_Mytree>&
+		_Rechecked(_Tree_const_iterator<_Mytree>& _Iter,
+			typename _Tree_const_iterator<_Mytree>
+				::_Unchecked_type _Right)
+	{	// convert to checked
+	return (_Iter._Rechecked(_Right));
+	}
+
+	// TEMPLATE CLASS _Tree_iterator
+template<class _Mytree>
+	class _Tree_iterator
+		: public _Tree_const_iterator<_Mytree>
+	{	// iterator for mutable tree
+public:
+	typedef _Tree_iterator<_Mytree> _Myiter;
+	typedef _Tree_const_iterator<_Mytree> _Mybase;
+	typedef bidirectional_iterator_tag iterator_category;
+
+	typedef typename _Mytree::_Nodeptr _Nodeptr;
+	typedef typename _Mytree::value_type value_type;
+	typedef typename _Mytree::difference_type difference_type;
+
+ #if _HAS_IMMUTABLE_SETS
+	typedef typename _Mytree::_ITptr pointer;
+	typedef typename _Mytree::_IReft reference;
+
+ #else /* _HAS_IMMUTABLE_SETS */
+	typedef typename _Mytree::pointer pointer;
+	typedef typename _Mytree::reference reference;
+ #endif /* _HAS_IMMUTABLE_SETS */
+
+	_Tree_iterator()
+		{	// construct with null node
+		}
+
+	_Tree_iterator(_Nodeptr _Pnode, const _Mytree *_Plist)
+		: _Mybase(_Pnode, _Plist)
+		{	// construct with node pointer _Pnode
+		}
+
+	typedef _Tree_unchecked_iterator<_Mytree> _Unchecked_type;
+
+	_Myiter& _Rechecked(_Unchecked_type _Right)
+		{	// reset from unchecked iterator
+		this->_Ptr = _Right._Ptr;
+		return (*this);
+		}
+
+	_Unchecked_type _Unchecked() const
+		{	// make an unchecked iterator
+		return (_Unchecked_type(this->_Ptr, (_Mytree *)this->_Getcont()));
+		}
+
+	reference operator*() const
+		{	// return designated value
+		return ((reference)**(_Mybase *)this);
+		}
+
+	pointer operator->() const
+		{	// return pointer to class object
+		return (&**this);
+		}
+
+	_Myiter& operator++()
+		{	// preincrement
+		++(*(_Mybase *)this);
+		return (*this);
+		}
+
+	_Myiter operator++(int)
+		{	// postincrement
+		_Myiter _Tmp = *this;
+		++*this;
+		return (_Tmp);
+		}
+
+	_Myiter& operator--()
+		{	// predecrement
+		--(*(_Mybase *)this);
+		return (*this);
+		}
+
+	_Myiter operator--(int)
+		{	// postdecrement
+		_Myiter _Tmp = *this;
+		--*this;
+		return (_Tmp);
+		}
+	};
+
+template<class _Mytree> inline
+	typename _Tree_iterator<_Mytree>::_Unchecked_type
+		_Unchecked(_Tree_iterator<_Mytree> _Iter)
+	{	// convert to unchecked
+	return (_Iter._Unchecked());
+	}
+
+template<class _Mytree> inline
+	_Tree_iterator<_Mytree>&
+		_Rechecked(_Tree_iterator<_Mytree>& _Iter,
+			typename _Tree_iterator<_Mytree>
+				::_Unchecked_type _Right)
+	{	// convert to checked
+	return (_Iter._Rechecked(_Right));
+	}
+
+		// TEMPLATE CLASS _Tree_nod
+template<class _Traits>
+	class _Tree_nod
+		: public _Traits	// traits form ultimate base
+	{	// base class for _Tree_ptr to hold storage
+public:
+	typedef typename _Traits::allocator_type allocator_type;
+	typedef typename _Traits::key_compare key_compare;
+	typedef typename _Traits::value_type value_type;
+
+	typedef typename allocator_type::template rebind<value_type>::other
+		_Alty;
+	typedef typename _Alty::size_type size_type;
+
+	struct _Node;
+	typedef _Node *_Nodeptr;	// _Node allocator must have ordinary pointers
+	typedef _Nodeptr& _Nodepref;
+
+	struct _Node
+		{	// tree node
+		_Nodeptr _Left;	// left subtree, or smallest element if head
+		_Nodeptr _Parent;	// parent, or root of tree if head
+		_Nodeptr _Right;	// right subtree, or largest element if head
+		value_type _Myval;	// the stored value, unused if head
+		char _Color;	// _Red or _Black, _Black if head
+		char _Isnil;	// true only if head (also nil) node
+
+	private:
+		_Node& operator=(const _Node&);
+		};
+
+ #if _ITERATOR_DEBUG_LEVEL == 0
+	_Tree_nod(const key_compare& _Parg,
+		allocator_type _Al)
+		: _Traits(_Parg), _Alnod(_Al), _Alval(_Al)
+		{	// construct traits from _Parg and allocators from _Al
+		}
+
+ #else /* _ITERATOR_DEBUG_LEVEL == 0 */
+	_Tree_nod(const key_compare& _Parg,
+		allocator_type _Al)
+		: _Traits(_Parg), _Alnod(_Al), _Alval(_Al)
+		{	// construct traits from _Parg, allocators and proxy from _Al
+		typename allocator_type::template rebind<_Container_proxy>::other
+			_Alproxy(_Alnod);
+		this->_Myproxy = _Alproxy.allocate(1);
+		_Cons_val(_Alproxy, this->_Myproxy, _Container_proxy());
+		this->_Myproxy->_Mycont = this;
+		}
+
+	~_Tree_nod()
+		{	// destroy proxy
+		typename allocator_type::template rebind<_Container_proxy>::other
+			_Alproxy(_Alnod);
+		this->_Orphan_all();
+		_Dest_val(_Alproxy, this->_Myproxy);
+		_Alproxy.deallocate(this->_Myproxy, 1);
+		this->_Myproxy = 0;
+		}
+ #endif /* _ITERATOR_DEBUG_LEVEL == 0 */
+
+	_Nodeptr _Myhead;	// pointer to head node
+	size_type _Mysize;	// number of elements
+
+	typename allocator_type::template rebind<_Node>::other
+		_Alnod;	// allocator object for nodes
+	_Alty _Alval;	// allocator object for element values
+	};
+
+		// TEMPLATE CLASS _Tree_val
+template<class _Traits>
+	class _Tree_val
+		: public _Tree_nod<_Traits>
+	{	// base class for _Tree to hold allocator _Alval
+public:
+	typedef _Tree_nod<_Traits> _Mybase;
+	typedef typename _Traits::allocator_type allocator_type;
+	typedef typename _Traits::key_compare key_compare;
+	typedef typename _Traits::key_type key_type;
+
+	typedef typename _Traits::_ITptr _ITptr;
+	typedef typename _Traits::_IReft _IReft;
+
+	typedef typename _Mybase::_Nodeptr _Nodeptr;
+	typedef typename _Mybase::_Nodepref _Nodepref;
+	typedef typename _Mybase::_Alty _Alty;
+
+	typedef typename _Alty::size_type size_type;
+	typedef typename _Alty::difference_type difference_type;
+	typedef typename _Alty::pointer pointer;
+	typedef typename _Alty::const_pointer const_pointer;
+	typedef typename _Alty::reference reference;
+	typedef typename _Alty::const_reference const_reference;
+	typedef typename _Alty::value_type value_type;
+
+	_Tree_val(const key_compare& _Parg,
+		allocator_type _Al)
+		: _Mybase(_Parg, _Al)
+		{	// construct base, and allocator from _Al
+		this->_Mysize = 0;
+		this->_Myhead = this->_Alnod.allocate(1);
+
+		this->_Left(this->_Myhead) = this->_Myhead;
+		this->_Parent(this->_Myhead) = this->_Myhead;
+		this->_Right(this->_Myhead) = this->_Myhead;
+		this->_Color(this->_Myhead) = this->_Black;
+		this->_Isnil(this->_Myhead) = true;
+		}
+
+	~_Tree_val()
+		{	// destroy the object
+		this->_Alnod.deallocate(this->_Myhead, 1);
+		}
+
+	_Nodeptr _Buynode()
+		{	// allocate a node
+		_Nodeptr _Wherenode = this->_Alnod.allocate(1);
+
+		this->_Left(_Wherenode) = this->_Myhead;
+		this->_Parent(_Wherenode) = this->_Myhead;
+		this->_Right(_Wherenode) = this->_Myhead;
+		this->_Color(_Wherenode) = this->_Red;
+		this->_Isnil(_Wherenode) = false;
+		return (_Wherenode);
+		}
+
+	_Nodeptr _Buynode(const value_type& _Val)
+		{	// allocate a node with defaults
+		_Nodeptr _Wherenode = _Buynode();
+
+		_TRY_BEGIN
+		_Cons_val(this->_Alval, _STD addressof(this->_Myval(_Wherenode)),
+			_Val);
+		_CATCH_ALL
+		this->_Alnod.deallocate(_Wherenode, 1);
+		_RERAISE;
+		_CATCH_END
+
+		return (_Wherenode);
+		}
+
+ #if _HAS_RVALUE_REFERENCES
+	template<class _Valty>
+		_Nodeptr _Buynode(_Valty&& _Val)
+		{	// allocate a node with defaults
+		_Nodeptr _Wherenode = _Buynode();
+
+		_TRY_BEGIN
+		_Cons_val(this->_Alval, _STD addressof(this->_Myval(_Wherenode)),
+			_STD forward<_Valty>(_Val));
+		_CATCH_ALL
+		this->_Alnod.deallocate(_Wherenode, 1);
+		_RERAISE;
+		_CATCH_END
+
+		return (_Wherenode);
+		}
+ #endif /* _HAS_RVALUE_REFERENCES */
+
+ #if _HAS_VARIADIC_TEMPLATES
+	template<class _DOTS _Valty>
+		_Nodeptr _Buynode(_Valty&& _DOTS _Val)
+		{	// allocate a node with defaults
+		_Nodeptr _Wherenode = _Buynode();
+
+		_TRY_BEGIN
+		_Cons_val(this->_Alval, _STD addressof(this->_Myval(_Wherenode)),
+			_STD forward<_Valty>(_Val) _DOTS);
+		_CATCH_ALL
+		this->_Alnod.deallocate(_Wherenode, 1);
+		_RERAISE;
+		_CATCH_END
+
+		return (_Wherenode);
+		}
+ #endif /* _HAS_VARIADIC_TEMPLATES */
+
+	enum _Redbl
+		{	// colors for link to parent
+		_Red, _Black};
+
+	static char& _Color(_Nodeptr _Pnode)
+		{	// return reference to color in node
+		return ((char&)(*_Pnode)._Color);
+		}
+
+	static char& _Isnil(_Nodeptr _Pnode)
+		{	// return reference to nil flag in node
+		return ((char&)(*_Pnode)._Isnil);
+		}
+
+	static key_type& _Key(_Nodeptr _Pnode)
+		{	// return reference to key in node
+		return ((key_type&)_Traits::_Kfn(_Myval(_Pnode)));
+		}
+
+	static _Nodepref _Left(_Nodeptr _Pnode)
+		{	// return reference to left pointer in node
+		return ((_Nodepref)(*_Pnode)._Left);
+		}
+
+	static _Nodepref _Parent(_Nodeptr _Pnode)
+		{	// return reference to parent pointer in node
+		return ((_Nodepref)(*_Pnode)._Parent);
+		}
+
+	static _Nodepref _Right(_Nodeptr _Pnode)
+		{	// return reference to right pointer in node
+		return ((_Nodepref)(*_Pnode)._Right);
+		}
+
+	static reference _Myval(_Nodeptr _Pnode)
+		{	// return reference to value in node
+		return ((reference)(*_Pnode)._Myval);
+		}
+
+	static _Nodeptr _Max(_Nodeptr _Pnode)
+		{	// return rightmost node in subtree at _Pnode
+		while (!_Isnil(_Right(_Pnode)))
+			_Pnode = _Right(_Pnode);
+		return (_Pnode);
+		}
+
+	static _Nodeptr _Min(_Nodeptr _Pnode)
+		{	// return leftmost node in subtree at _Pnode
+		while (!_Isnil(_Left(_Pnode)))
+			_Pnode = _Left(_Pnode);
+		return (_Pnode);
+		}
+	};
+
+		// TEMPLATE CLASS _Tree
+export
+template<class _Traits>
+	class _Tree
+		: public _Tree_val<_Traits>
+	{	// ordered red-black tree for [multi_]{map set}
+public:
+	typedef _Tree<_Traits> _Myt;
+	typedef _Tree_val<_Traits> _Mybase;
+	typedef typename _Mybase::_Val_type _Val_type;
+	typedef typename _Mybase::_Node _Node;
+	typedef typename _Mybase::_Nodeptr _Nodeptr;
+
+	typedef typename _Traits::key_type key_type;
+	typedef typename _Traits::key_compare key_compare;
+	typedef typename _Traits::value_compare value_compare;
+	typedef typename _Traits::value_type value_type;
+	typedef typename _Traits::allocator_type allocator_type;
+
+	typedef typename allocator_type::size_type size_type;
+	typedef typename allocator_type::difference_type difference_type;
+	typedef typename allocator_type::pointer pointer;
+	typedef typename allocator_type::const_pointer const_pointer;
+	typedef typename allocator_type::reference reference;
+	typedef typename allocator_type::const_reference const_reference;
+
+	typedef _Tree_const_iterator<_Mybase>
+		const_iterator;
+
+	typedef _Tree_iterator<_Mybase>
+		iterator;
+
+	typedef _STD reverse_iterator<iterator> reverse_iterator;
+	typedef _STD reverse_iterator<const_iterator> const_reverse_iterator;
+	typedef pair<iterator, bool> _Pairib;
+	typedef pair<iterator, iterator> _Pairii;
+	typedef pair<const_iterator, const_iterator> _Paircc;
+
+	explicit _Tree(const key_compare& _Parg,
+		const allocator_type& _Al)
+		: _Mybase(_Parg, _Al)
+		{	// construct empty tree
+		}
+
+	_Tree(const value_type *_First, const value_type *_Last,
+		const key_compare& _Parg, const allocator_type& _Al);
+
+	_Tree(const _Myt& _Right)
+		: _Mybase(_Right.key_comp(), _Right._Alval)
+		{	// construct tree by copying _Right
+		_TRY_BEGIN
+		_Copy(_Right);
+		_CATCH_ALL
+		_Tidy();
+		_RERAISE;
+		_CATCH_END
+		}
+
+ #if _HAS_RVALUE_REFERENCES
+	_Tree(_Myt&& _Right)
+		: _Mybase(_Right.key_comp(), _Right._Alval)
+		{	// construct tree by copying _Right
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		}
+
+	_Myt& operator=(_Myt&& _Right)
+		{	// assign by moving _Right
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		return (*this);
+		}
+
+	void _Assign_rv(_Myt&& _Right)
+		{	// assign by moving _Right
+		if (this == &_Right)
+			;
+		else if (get_allocator() != _Right.get_allocator())
+			_Xinvalid_argument("invalid map/set<T> move assign");
+		else
+			{	// clear this and steal from _Right
+			clear();
+			this->_Swap_all(_Right);
+			_Swap_adl(this->comp, _Right.comp);
+			_STD swap(this->_Myhead, _Right._Myhead);
+			_STD swap(this->_Mysize, _Right._Mysize);
+			}
+		}
+
+	template<class _Valty>
+		_Pairib insert(_Valty&& _Val)
+		{	// try to insert node with value _Val, favoring right side
+		return (_Linsert(this->_Buynode(_STD forward<_Valty>(_Val)),
+			false));
+		}
+
+	template<class _Valty>
+		typename _STD tr1::enable_if<!_STD tr1::is_same<const_iterator,
+			typename _STD tr1::remove_reference<_Valty>::type>::value,
+				iterator>::type
+		insert(const_iterator _Where,
+			_Valty&& _Val)
+		{	// try to insert node with value _Val using _Where as a hint
+		return (_Insert(_Where,
+			this->_Buynode(_STD forward<_Valty>(_Val))));
+		}
+
+	template<class _DOTS _Valty>
+		_Pairib emplace(_Valty&& _DOTS _Val)
+		{	// try to insert node with value _Val, favoring right side
+		return (_Linsert(this->_Buynode(_STD forward<_Valty>(_Val) _DOTS),
+			false));
+		}
+
+	template<class _DOTS _Valty>
+		iterator emplace_hint(const_iterator _Where, _Valty&& _DOTS _Val)
+		{	// insert _Val at _Where
+		return (_Insert(_Where,
+			this->_Buynode(_STD forward<_Valty>(_Val) _DOTS)));
+		}
+
+	template<class _DOTS _Valty>
+		iterator emplace_hint(iterator _Where, _Valty&& _DOTS _Val)
+		{	// insert _Val at _Where
+		return (_Insert(_Where,
+			this->_Buynode(_STD forward<_Valty>(_Val) _DOTS)));
+		}
+	void swap(_Myt&& _Right)
+		{	// exchange contents with movable _Right
+		_Assign_rv(_STD forward<_Myt>(_Right));
+		}
+ #endif /* _HAS_RVALUE_REFERENCES */
+
+	~_Tree()
+		{	// destroy tree
+		_Tidy();
+		}
+
+	_Myt& operator=(const _Myt& _Right)
+		{	// replace contents from _Right
+		if (this != &_Right)
+			{	// worth doing
+			erase(begin(), end());
+			this->comp = _Right.comp;
+			_Copy(_Right);
+			}
+		return (*this);
+		}
+
+	iterator begin()
+		{	// return iterator for beginning of mutable sequence
+		return (iterator(_Lmost(), this));
+		}
+
+	const_iterator begin() const
+		{	// return iterator for beginning of nonmutable sequence
+		return (const_iterator(_Lmost(), this));
+		}
+
+	iterator end()
+		{	// return iterator for end of mutable sequence
+		return (iterator(this->_Myhead, this));
+		}
+
+	const_iterator end() const
+		{	// return iterator for end of nonmutable sequence
+		return (const_iterator(this->_Myhead, this));
+		}
+
+	reverse_iterator rbegin()
+		{	// return iterator for beginning of reversed mutable sequence
+		return (reverse_iterator(end()));
+		}
+
+	const_reverse_iterator rbegin() const
+		{	// return iterator for beginning of reversed nonmutable sequence
+		return (const_reverse_iterator(end()));
+		}
+
+	reverse_iterator rend()
+		{	// return iterator for end of reversed mutable sequence
+		return (reverse_iterator(begin()));
+		}
+
+	const_reverse_iterator rend() const
+		{	// return iterator for end of reversed nonmutable sequence
+		return (const_reverse_iterator(begin()));
+		}
+
+ #if _HAS_CPP0X
+	const_iterator cbegin() const
+		{	// return iterator for beginning of nonmutable sequence
+		return (((const _Myt *)this)->begin());
+		}
+
+	const_iterator cend() const
+		{	// return iterator for end of nonmutable sequence
+		return (((const _Myt *)this)->end());
+		}
+
+	const_reverse_iterator crbegin() const
+		{	// return iterator for beginning of reversed nonmutable sequence
+		return (((const _Myt *)this)->rbegin());
+		}
+
+	const_reverse_iterator crend() const
+		{	// return iterator for ebd of reversed nonmutable sequence
+		return (((const _Myt *)this)->rend());
+		}
+ #endif /* _HAS_CPP0X */
+
+	size_type size() const
+		{	// return length of sequence
+		return (this->_Mysize);
+		}
+
+	size_type max_size() const
+		{	// return maximum possible length of sequence
+		return (this->_Alval.max_size());
+		}
+
+	bool empty() const
+		{	// return true only if sequence is empty
+		return (size() == 0);
+		}
+
+	allocator_type get_allocator() const
+		{	// return allocator object for values
+		return (this->_Alval);
+		}
+
+	key_compare key_comp() const
+		{	// return object for comparing keys
+		return (this->comp);
+		}
+
+	value_compare value_comp() const
+		{	// return object for comparing values
+		return (value_compare(key_comp()));
+		}
+
+	_Pairib insert(const value_type& _Val)
+		{	// try to insert node with value _Val, favoring right side
+		return (insert(_Val, false));
+		}
+
+	_Pairib insert(const value_type& _Val, bool _Leftish);
+
+	_Pairib _Linsert(_Nodeptr _Node, bool _Leftish);
+
+	iterator insert(const_iterator _Where,
+		const value_type& _Val);
+
+	iterator _Insert(const_iterator _Where,
+		_Nodeptr _Node);
+
+	template<class _Iter>
+		void insert(_Iter _First, _Iter _Last);
+
+ #if _HAS_INITIALIZER_LISTS
+	void insert(_XSTD initializer_list<value_type> _Ilist)
+		{	// insert initializer_list
+		insert(_Ilist.begin(), _Ilist.end());
+		}
+ #endif /* _HAS_INITIALIZER_LISTS */
+
+	iterator erase(const_iterator _Where);
+
+	iterator erase(const_iterator _First, const_iterator _Last);
+
+	size_type erase(const key_type& _Keyval);
+
+	void erase(const key_type *_First, const key_type *_Last)
+		{	// erase all that match array of keys [_First, _Last)
+		_DEBUG_RANGE(_First, _Last);
+		while (_First != _Last)
+			erase(*_First++);
+		}
+
+	void clear()
+		{	// erase all
+ #if _ITERATOR_DEBUG_LEVEL == 2
+		this->_Orphan_ptr(*this, 0);
+ #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
+
+		_Erase(_Root());
+		_Root() = this->_Myhead;
+		_Lmost() = this->_Myhead;
+		_Rmost() = this->_Myhead;
+		this->_Mysize = 0;
+		}
+
+	iterator find(const key_type& _Keyval)
+		{	// find an element in mutable sequence that matches _Keyval
+		iterator _Where = lower_bound(_Keyval);
+		return (_Where == end()
+			|| _DEBUG_LT_PRED(this->comp,
+				_Keyval, this->_Key(_Where._Mynode()))
+					? end() : _Where);
+		}
+
+	const_iterator find(const key_type& _Keyval) const
+		{	// find an element in nonmutable sequence that matches _Keyval
+		const_iterator _Where = lower_bound(_Keyval);
+		return (_Where == end()
+			|| _DEBUG_LT_PRED(this->comp,
+				_Keyval, this->_Key(_Where._Mynode()))
+					? end() : _Where);
+		}
+
+	size_type count(const key_type& _Keyval) const
+		{	// count all elements that match _Keyval
+		_Paircc _Ans = equal_range(_Keyval);
+		size_type _Num = 0;
+		_Distance(_Ans.first, _Ans.second, _Num);
+		return (_Num);
+		}
+
+	iterator lower_bound(const key_type& _Keyval)
+		{	// find leftmost node not less than _Keyval in mutable tree
+		return (iterator(_Lbound(_Keyval), this));
+		}
+
+	const_iterator lower_bound(const key_type& _Keyval) const
+		{	// find leftmost node not less than _Keyval in nonmutable tree
+		return (const_iterator(_Lbound(_Keyval), this));
+		}
+
+	iterator upper_bound(const key_type& _Keyval)
+		{	// find leftmost node greater than _Keyval in mutable tree
+		return (iterator(_Ubound(_Keyval), this));
+		}
+
+	const_iterator upper_bound(const key_type& _Keyval) const
+		{	// find leftmost node greater than _Keyval in nonmutable tree
+		return (const_iterator(_Ubound(_Keyval), this));
+		}
+
+	_Pairii equal_range(const key_type& _Keyval)
+		{	// find range equivalent to _Keyval in mutable tree
+		return (_Eqrange(_Keyval));
+		}
+
+	_Paircc equal_range(const key_type& _Keyval) const
+		{	// find range equivalent to _Keyval in nonmutable tree
+		return (_Eqrange(_Keyval));
+		}
+
+	void swap(_Myt& _Right)
+		{	// exchange contents with _Right
+		if (this == &_Right)
+			;	// same object, do nothing
+		else if (get_allocator() == _Right.get_allocator())
+			{	// same allocator, swap control information
+			this->_Swap_all(_Right);
+			_Swap_adl(this->comp, _Right.comp);
+			_STD swap(this->_Myhead, _Right._Myhead);
+			_STD swap(this->_Mysize, _Right._Mysize);
+			}
+		else
+			{	// different allocator, do multiple moves
+			_Myt _Ts = _Move(*this);
+
+			*this = _Move(_Right);
+			_Right = _Move(_Ts);
+			}
+		}
+
+protected:
+	void _Copy(const _Myt& _Right);
+
+	_Nodeptr _Copy(_Nodeptr _Rootnode, _Nodeptr _Wherenode);
+
+	_Paircc _Eqrange(const key_type& _Keyval) const;
+
+	_Pairii _Eqrange(const key_type& _Keyval);
+
+	void _Erase(_Nodeptr _Rootnode);
+
+	iterator _Insert(bool _Addleft, _Nodeptr _Wherenode,
+		const value_type& _Val)
+		{	// add value next to _Wherenode, to left if _Addleft
+		return (_Insert(_Addleft, _Wherenode, this->_Buynode(_Val)));
+		}
+
+	iterator _Insert(bool _Addleft, _Nodeptr _Wherenode,
+		_Nodeptr _Newnode);
+
+	_Nodeptr _Lbound(const key_type& _Keyval) const;
+
+	_Nodeptr _Lbound(const key_type& _Keyval);
+
+	_Nodeptr& _Lmost() const
+		{	// return leftmost node in nonmutable tree
+		return (this->_Left(this->_Myhead));
+		}
+
+	void _Lrotate(_Nodeptr _Wherenode);
+
+	_Nodeptr& _Rmost() const
+		{	// return rightmost node in nonmutable tree
+		return (this->_Right(this->_Myhead));
+		}
+
+	_Nodeptr& _Root() const
+		{	// return root of nonmutable tree
+		return (this->_Parent(this->_Myhead));
+		}
+
+	void _Rrotate(_Nodeptr _Wherenode);
+
+	_Nodeptr _Ubound(const key_type& _Keyval) const;
+
+	_Nodeptr _Ubound(const key_type& _Keyval);
+
+ #if _ITERATOR_DEBUG_LEVEL == 2
+	void _Orphan_ptr(_Myt& _Cont, _Nodeptr _Ptr) const
+		{	// orphan iterators with specified node pointers
+		_Lockit _Lock(_LOCK_DEBUG);
+		const_iterator **_Pnext = (const_iterator **)_Cont._Getpfirst();
+		if (_Pnext != 0)
+			while (*_Pnext != 0)
+				if ((*_Pnext)->_Ptr == this->_Myhead
+					|| _Ptr != 0 && (*_Pnext)->_Ptr != _Ptr)
+					_Pnext = (const_iterator **)(*_Pnext)->_Getpnext();
+				else
+					{	// orphan the iterator
+					(*_Pnext)->_Clrcont();
+					*_Pnext = *(const_iterator **)(*_Pnext)->_Getpnext();
+					}
+		}
+ #endif /* _ITERATOR_DEBUG_LEVEL == 2 */
+
+	void _Tidy()
+		{	// free all storage
+		erase(begin(), end());
+		}
+	};
+
+		// _Tree TEMPLATE OPERATORS
+template<class _Traits> inline
+	bool operator==(const _Tree<_Traits>& _Left, const _Tree<_Traits>& _Right)
+	{	// test for _Tree equality
+	return (_Left.size() == _Right.size()
+		&& equal(_Left.begin(), _Left.end(), _Right.begin()));
+	}
+
+template<class _Traits> inline
+	bool operator!=(const _Tree<_Traits>& _Left, const _Tree<_Traits>& _Right)
+	{	// test for _Tree inequality
+	return (!(_Left == _Right));
+	}
+
+template<class _Traits> inline
+	bool operator<(const _Tree<_Traits>& _Left, const _Tree<_Traits>& _Right)
+	{	// test if _Less < _Right for _Trees
+	return (lexicographical_compare(_Left.begin(), _Left.end(),
+		_Right.begin(), _Right.end()));
+	}
+
+template<class _Traits> inline
+	bool operator>(const _Tree<_Traits>& _Left, const _Tree<_Traits>& _Right)
+	{	// test if _Less > _Right for _Trees
+	return (_Right < _Left);
+	}
+
+template<class _Traits> inline
+	bool operator<=(const _Tree<_Traits>& _Left, const _Tree<_Traits>& _Right)
+	{	// test if _Less <= _Right for _Trees
+	return (!(_Right < _Left));
+	}
+
+template<class _Traits> inline
+	bool operator>=(const _Tree<_Traits>& _Left, const _Tree<_Traits>& _Right)
+	{	// test if _Less >= _Right for _Trees
+	return (!(_Left < _Right));
+	}
+_STD_END
+#endif /* _XTREE_ */
+
+/*
+ * This file is derived from software bearing the following
+ * restrictions:
+ *
+ * Copyright (c) 1994
+ * Hewlett-Packard Company
+ *
+ * Permission to use, copy, modify, distribute and sell this
+ * software and its documentation for any purpose is hereby
+ * granted without fee, provided that the above copyright notice
+ * appear in all copies and that both that copyright notice and
+ * this permission notice appear in supporting documentation.
+ * Hewlett-Packard Company makes no representations about the
+ * suitability of this software for any purpose. It is provided
+ * "as is" without express or implied warranty.
+ */
+
+/*
+ * Copyright (c) 1992-2010 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Consult your license regarding permissions and restrictions.
+V5.30:0009 */
