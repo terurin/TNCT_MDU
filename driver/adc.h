@@ -8,43 +8,50 @@
 #ifndef ADC_H
 #define	ADC_H
 #include "../math/dsp.h"
-namespace module{
 
+namespace ADC{
 
-class ADC {
-public:
     //フィールド
-    static const float ReferenceVoltage; //電圧基準ICの電圧[V]
-    static const int MotorVoltageMax; //モーター電圧の最大値[V]
-    static const float MotorAmpereMax; //モーター電流の最大値[A/V]
+    static const float REFERENCE_VOLTAGE = 2.048f; //電圧基準ICの電圧[V]
+    static const int MOTOR_VOLTAGE_MAX = 32.768f; //モーター電圧の最大値[V]
+    static const float MOTOR_AMPERE_MAX = 40.48f; //モーター電流の最大値[A/V]
+    extern bool IsInitialized;  //初期化済みかどうか
     
-    static tmath::Q16 MotorVoltageRaw(); //なまの値　未実装
-    static tmath::Q16 Motor1AmpereRaw();
-    static tmath::Q16 Motor2AmpareRaw();
-    
-    float MotorVoltage(); //単位[V]    
-    float Motor1Ampere();//電流値
-    float Motor2Ampare();//電流値
-    
-    enum AnalogPinNames{
-    AnalogPinNone=-1,
-    AnalogPinMotor1Amp=12,
-    AnalogPinMotor2Amp=9,
-    AnalogPinMotorVlot=1
+    // 要修正
+     enum AnalogPinNames{
+        AnalogPinNone = -1,
+        AnalogPinMotor1Amp = 12,
+        AnalogPinMotor2Amp = 9,
+        AnalogPinMotorVlot = 1
     };
-
-private:
-    static bool IsInitialized;//初期化済みかどうか
-public:
-    static void Initialize();
-    static tmath::Q16 GetADCRaw(AnalogPinNames);  
+      
+    void Initialize();
+    tmath::Q16 GetADCRaw(AnalogPinNames);  
+    void SetUpADC();
+ 
+    static inline tmath::Q16 MotorVoltageRaw(){
+        return GetADCRaw(AnalogPinMotorVlot);
+    }
+   
+    static inline tmath::Q16 Motor1AmpereRaw(){
+        return GetADCRaw(AnalogPinMotor1Amp);
+    }
     
-private:
-    static void SetUpADC();
+    static inline tmath::Q16 Motor2AmpareRaw(){
+        return GetADCRaw(AnalogPinMotor2Amp);
+    }
     
-};
-
-
+    static inline float MotorVoltage(){ // 単位[V]
+        return tmath::ToFloat(MotorVoltageRaw()) * MOTOR_VOLTAGE_MAX;
+    }
+    
+    static inline float Motor1Ampere(){ // 電流値
+        return tmath::ToFloat(Motor1AmpereRaw()) * MOTOR_AMPERE_MAX;
+    }
+   
+    static inline float Motor2Ampare(){ // 電流値
+        return tmath::ToFloat(Motor2AmpareRaw()) * MOTOR_AMPERE_MAX;
+    }
+    
 }
 #endif	/* ADC_H */
-

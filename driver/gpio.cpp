@@ -8,6 +8,8 @@
 #include "gpio.h"
 
 namespace GPIO{
-    
+    void Init(){
+        
+    }
 }
 

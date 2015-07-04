@@ -14,6 +14,8 @@
 #include "driver/IModule.h"
 #include "driver/Motor.h"
 #include "driver/uart.h"
+#include "driver/lcd.h"
+#include "driver/gpio.h"
 #include "math/math_typedef.h"
 #include "math/math_basic.h"
 #include "math/dsp.h"
@@ -27,6 +29,16 @@
 
 int main() {
 
+#if defined _DFU_
+    
+#elif defined _APP_
+    
+#endif
+    
+    while(true){
+        
+    }
+    
     return 0;
 }
 

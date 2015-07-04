@@ -27,11 +27,11 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 PROJECTNAME=TNCT_MCU
 
 # Active Configuration
-DEFAULTCONF=default
+DEFAULTCONF=DFU
 CONF=${DEFAULTCONF}
 
 # All Configurations
-ALLCONFS=default 
+ALLCONFS=DFU APP 
 
 
 # build
@@ -45,13 +45,15 @@ ALLCONFS=default
 
 # clobber
 .clobber-impl: .clobber-pre .depcheck-impl
-	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=default clean
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=DFU clean
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=APP clean
 
 
 
 # all
 .all-impl: .all-pre .depcheck-impl
-	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=default build
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=DFU build
+	    ${MAKE} SUBPROJECTS=${SUBPROJECTS} CONF=APP build
 
 
 

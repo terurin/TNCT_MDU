@@ -7,66 +7,41 @@
 
 #include "adc.h"
 #include "../system/sys_config.h"
-namespace module {
 
-    const float ADC::ReferenceVoltage = 2.048f;
-    const int ADC::MotorVoltageMax = 32.768f;
-    const float ADC::MotorAmpereMax = 40.48f;
+namespace ADC {
+
     
-    bool ADC::IsInitialized=false;
+    bool IsInitialized = false;
+   
     
-    tmath::Q16 ADC::MotorVoltageRaw(){
-        return GetADCRaw(ADC::AnalogPinMotorVlot);
-    }
-    
-    tmath::Q16 ADC::Motor1AmpereRaw(){
-        return GetADCRaw(ADC::AnalogPinMotor1Amp);
-    }
-    
-    tmath::Q16 ADC::Motor2AmpareRaw(){
-        return GetADCRaw(ADC::AnalogPinMotor2Amp);
-    }
-    
-    float ADC::MotorVoltage(){
-        return tmath::ToFloat(MotorVoltageRaw())*MotorVoltageMax;
-    }
-    
-    float ADC::Motor1Ampere(){
-        return tmath::ToFloat(Motor1AmpereRaw())*MotorAmpereMax;
-    }
-    
-    float ADC::Motor2Ampare(){
-        return tmath::ToFloat(Motor2AmpareRaw())*MotorAmpereMax;
-    }
-    
-    void ADC::Initialize() {
-        ADC::SetUpADC();
-        IsInitialized=true;
+    void Initialize() {
+        SetUpADC();
+        IsInitialized = true;
     }
 
-    tmath::Q16 ADC::GetADCRaw(AnalogPinNames pin_name) {
+    tmath::Q16 GetADCRaw(AnalogPinNames pin_name) {
         AD1CHSbits.CH0SA = pin_name;
         AD1CON1bits.SAMP = true;
         while (AD1CON1bits.SAMP); //wait while adconverting
         return tmath::Q16(ADC1BUF0);
     }
 
-    void ADC::SetUpADC() {
+    void SetUpADC() {
         /* 対象となるぴん
-         * RA0 レファレンス電圧  Input   Anolog
-         * RA1 モーター電圧      Input   Anolog AN1
+         * RA10 レファレンス電圧  Input   Anolog
+         * RB4 モーター電圧      Input   Anolog AN4
          * RB12 MotorF1         Input   Anolog AN12
-         * RB15 MotorF2         Input   Anolog AN9
+         * RB15 MotorF2         Input   Anolog AN15
          */
 
         //dir
-        TRISAbits.TRISA0 = true;
-        TRISAbits.TRISA1 = true;
+        TRISBbits.TRISB4 = true;
+        TRISAbits.TRISA10 = true;
         TRISBbits.TRISB12 = true;
         TRISBbits.TRISB15 = true;
         //make pins analog
-        ANSELAbits.ANSA0 = true;
-        ANSELAbits.ANSA1 = true;
+        ANSELBbits.ANSB4 = true;
+        ANSELAbits.ANSA10 = true;
         ANSELBbits.ANSB12 = true;
         ANSELBbits.ANSB15 = true;
 

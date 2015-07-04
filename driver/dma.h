@@ -8,7 +8,7 @@
 #ifndef DMA_H
 #define	DMA_H
 
-namespace module{
+namespace DMA{
     //this kind of pic has 4 dma channel
     
     //

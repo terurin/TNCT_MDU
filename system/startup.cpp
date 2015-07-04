@@ -14,14 +14,8 @@
 
 void init(){
 
-
-
     SYSTEMConfigPB(System_Clock());
     mJTAGPortEnable(false);
-    
-    
-    
-
 
 }
 

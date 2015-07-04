@@ -51,7 +51,7 @@ namespace module {
          * RB0 Fault            Input   Digtal(pull-up) FlautA
          * RB7 MotorA1          Output  Digital OC1
          * RB8 MotorB1          OutPut  Digital OC2
-         * RB13 MotorB2         Output  Digital OC4
+         * RB15 MotorB2         Output  Digital OC4
          * RB14 MotorA2         Output  Digital OC3
          */
         //set dir io
@@ -71,7 +71,7 @@ namespace module {
         OCFAR = 0b0010; //FaultA
         RPB7R = 0b0101; //OC1
         RPB8R = 0b0101; //OC2
-        RPB13R = 0b0101; //OC4
+        RPB15R = 0b0101; //OC4
         RPB14R = 0b0101; //OC3
         //OC1
         OC1CONbits.ON = false;

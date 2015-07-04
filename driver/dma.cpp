@@ -7,7 +7,7 @@
 
 #include "dma.h"
 
-namespace module{
+namespace DMA{
     
     
     
