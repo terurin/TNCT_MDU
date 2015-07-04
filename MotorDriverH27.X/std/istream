@@ -1,0 +1,433 @@
+// istream standard header
+#ifndef _ISTREAM_
+#define _ISTREAM_
+#include <ostream>
+
+_STD_BEGIN
+export
+		// TEMPLATE CLASS basic_istream
+template<class _Elem,
+	class _Traits>
+	class basic_istream
+		: virtual public basic_ios<_Elem, _Traits>
+	{	// control extractions from a stream buffer
+public:
+	typedef basic_istream<_Elem, _Traits> _Myt;
+	typedef basic_ios<_Elem, _Traits> _Myios;
+	typedef basic_streambuf<_Elem, _Traits> _Mysb;
+	typedef istreambuf_iterator<_Elem, _Traits> _Iter;
+	typedef ctype<_Elem> _Ctype;
+	typedef num_get<_Elem, _Iter> _Nget;
+
+ #if _HAS_TRADITIONAL_IOSTREAMS
+	explicit basic_istream(_Mysb *_Strbuf = 0,
+		bool _Isstd = false)
+
+ #else /* _HAS_TRADITIONAL_IOSTREAMS */
+	explicit basic_istream(_Mysb *_Strbuf,
+		bool _Isstd = false)
+ #endif /* _HAS_TRADITIONAL_IOSTREAMS */
+
+		: _Chcount(0)
+		{	// construct from stream buffer pointer
+		_Myios::init(_Strbuf, _Isstd);
+		}
+
+	basic_istream(_Uninitialized)
+		{	// construct uninitialized
+		ios_base::_Addstd(this);
+		}
+
+ #if _HAS_RVALUE_REFERENCES
+	basic_istream(_Myt&& _Right)
+		: _Chcount(_Right._Chcount)
+		{	// construct by moving _Right
+		_Myios::init();
+		_Myios::move(_STD move(_Right));
+		_Right._Chcount = 0;
+		}
+
+	_Myt& operator=(_Myt&& _Right)
+		{	// move from _Right
+		this->swap(_Right);
+		return (*this);
+		}
+
+	void swap(_Myt& _Right)
+		{	// swap with _Right
+		_Myios::swap(_Right);
+		_STD swap(_Chcount, _Right._Chcount);
+		}
+ #endif /* _HAS_RVALUE_REFERENCES */
+
+	virtual ~basic_istream()
+		{	// destroy the object
+		}
+
+	typedef typename _Traits::int_type int_type;
+	typedef typename _Traits::pos_type pos_type;
+	typedef typename _Traits::off_type off_type;
+
+		// TEMPLATE CLASS sentry
+	class _Sentry_base
+		{	// stores thread lock and reference to input stream
+	public:
+		_Sentry_base(_Myt& _Istr)
+			: _Myistr(_Istr)
+			{	// lock the stream buffer, if there
+			if (_Myistr.rdbuf() != 0)
+				_Myistr.rdbuf()->_Lock();
+			}
+
+		~_Sentry_base()
+			{	// destroy after unlocking
+			if (_Myistr.rdbuf() != 0)
+				_Myistr.rdbuf()->_Unlock();
+			}
+
+		_Myt& _Myistr;	// the input stream, for _Unlock call at destruction
+
+	private:
+		_Sentry_base& operator=(const _Sentry_base&);
+		};
+
+	class sentry
+		: public _Sentry_base
+		{	// stores thread lock and result of _Ipfx call
+	public:
+		explicit sentry(_Myt& _Istr, bool _Noskip = false)
+			: _Sentry_base(_Istr)
+			{	// construct locking and calling _Ipfx
+			_Ok = this->_Myistr._Ipfx(_Noskip);
+			}
+
+		_OPERATOR_BOOL() const
+			{	// test if _Ipfx succeeded
+			return (_Ok ? _CONVERTIBLE_TO_TRUE : 0);
+			}
+
+	private:
+		bool _Ok;	// true if _Ipfx succeeded at construction
+
+		sentry(const sentry&);	// not defined
+		sentry& operator=(const sentry&);	// not defined
+		};
+
+	bool _Ipfx(bool _Noskip = false);
+
+	bool ipfx(bool _Noskip = false)
+		{	// test stream state and skip whitespace as needed (retained)
+		return (_Ipfx(_Noskip));
+		}
+
+	void isfx()
+		{	// perform any wrapup (retained)
+		}
+
+	_Myt& operator>>(_Myt& (*_Pfn)(_Myt&))
+		{	// call basic_istream manipulator
+		_DEBUG_POINTER(_Pfn);
+		return ((*_Pfn)(*this));
+		}
+
+	_Myt& operator>>(_Myios& (*_Pfn)(_Myios&))
+		{	// call basic_ios manipulator
+		_DEBUG_POINTER(_Pfn);
+		(*_Pfn)(*(_Myios *)this);
+		return (*this);
+		}
+
+	_Myt& operator>>(ios_base& (*_Pfn)(ios_base&))
+		{	// call ios_base manipulator
+		_DEBUG_POINTER(_Pfn);
+		(*_Pfn)(*(ios_base *)this);
+		return (*this);
+		}
+
+	_Myt& operator>>(_Bool& _Val);
+
+	_Myt& operator>>(short& _Val);
+
+	_Myt& operator>>(unsigned short& _Val);
+
+	_Myt& operator>>(int& _Val);
+
+	_Myt& operator>>(unsigned int& _Val);
+
+	_Myt& operator>>(long& _Val);
+
+	_Myt& operator>>(unsigned long& _Val);
+
+ #ifdef _LONGLONG
+	_Myt& operator>>(_LONGLONG& _Val);
+
+	_Myt& operator>>(_ULONGLONG& _Val);
+ #endif /* _LONGLONG */
+
+	_Myt& operator>>(float& _Val);
+
+	_Myt& operator>>(double& _Val);
+
+	_Myt& operator>>(long double& _Val);
+
+	_Myt& operator>>(void *& _Val);
+
+	_Myt& operator>>(_Mysb *_Strbuf);
+
+	int_type get();
+
+	_Myt& get(_Elem *_Str, streamsize _Count)
+		{	// get up to _Count characters into NTCS
+		return (get(_Str, _Count, _Myios::widen('\n')));
+		}
+
+	_Myt& get(_Elem *_Str,
+		streamsize _Count, _Elem _Delim);
+
+	_Myt& get(_Elem& _Ch);
+
+	_Myt& get(_Mysb& _Strbuf)
+		{	// extract up to newline and insert into stream buffer
+		return (get(_Strbuf, _Myios::widen('\n')));
+		}
+
+	_Myt& get(_Mysb& _Strbuf, _Elem _Delim);
+
+	_Myt& getline(_Elem *_Str, streamsize _Count)
+		{	// get up to _Count characters into NTCS, discard newline
+		return (getline(_Str, _Count, _Myios::widen('\n')));
+		}
+
+	_Myt& getline(_Elem *_Str,
+		streamsize _Count, _Elem _Delim);
+
+	_Myt& ignore(streamsize _Count = 1,
+		int_type _Metadelim = _Traits::eof());
+
+	_Myt& read(_Elem *_Str, streamsize _Count);
+
+	streamsize readsome(_Elem *_Str,
+		streamsize _Count);
+
+	int_type peek();
+
+	_Myt& putback(_Elem _Ch);
+
+	_Myt& unget();
+
+	streamsize gcount() const
+		{	// get count from last extraction
+		return (_Chcount);
+		}
+
+	int sync();
+
+	_Myt& seekg(pos_type _Pos)
+		{	// set input stream position to _Pos
+		if (!ios_base::fail()
+			&& (off_type)_Myios::rdbuf()->pubseekpos(_Pos,
+				ios_base::in) == _BADOFF)
+			_Myios::setstate(ios_base::failbit);
+		return (*this);
+		}
+
+	_Myt& seekg(off_type _Off, ios_base::seekdir _Way)
+		{	// change input stream position by _Off, according to _Way
+		if (!ios_base::fail()
+			&& (off_type)_Myios::rdbuf()->pubseekoff(_Off, _Way,
+				ios_base::in) == _BADOFF)
+			_Myios::setstate(ios_base::failbit);
+		return (*this);
+		}
+
+	pos_type tellg()
+		{	// return input stream position
+		if (!ios_base::fail())
+			return (_Myios::rdbuf()->pubseekoff(0,
+				ios_base::cur, ios_base::in));
+		else
+			return (pos_type(_BADOFF));
+		}
+
+private:
+	streamsize _Chcount;	// the character count
+	};
+
+	// basic_istream TEMPLATE OPERATORS
+template<class _Elem,
+	class _Traits> inline
+	void swap(basic_istream<_Elem, _Traits>& _Left,
+		basic_istream<_Elem, _Traits>& _Right)
+	{	// swap _Left and _Right basic_istreams
+	_Left.swap(_Right);
+	}
+
+		// TEMPLATE CLASS basic_iostream
+template<class _Elem,
+	class _Traits>
+	class basic_iostream
+	: public basic_istream<_Elem, _Traits>,
+		public basic_ostream<_Elem, _Traits>
+	{	// control insertions and extractions from a stream buffer
+public:
+	typedef basic_iostream<_Elem, _Traits> _Myt;
+	typedef basic_istream<_Elem, _Traits> _Myis;
+	typedef basic_ostream<_Elem, _Traits> _Myos;
+	typedef basic_ios<_Elem, _Traits> _Myios;
+	typedef _Elem char_type;
+	typedef _Traits traits_type;
+	typedef typename _Traits::int_type int_type;
+	typedef typename _Traits::pos_type pos_type;
+	typedef typename _Traits::off_type off_type;
+
+	explicit basic_iostream(basic_streambuf<_Elem, _Traits> *_Strbuf)
+		: _Myis(_Strbuf, false),
+			_Myos(_Noinit, false)
+		{	// construct from stream buffer pointer
+		}
+
+ #if _HAS_RVALUE_REFERENCES
+	basic_iostream(_Myt&& _Right)
+		: _Myis(_Right.rdbuf(), false),
+			_Myos(_Noinit, false)
+		{	// construct by moving _Right
+		_Myios::init();
+		_Myios::move(_STD forward<_Myt>(_Right));
+		}
+
+	_Myt& operator=(_Myt&& _Right)
+		{	// move from _Right
+		this->swap(_Right);
+		return (*this);
+		}
+
+	void swap(_Myt& _Right)
+		{	// swap with _Right
+		if (this != &_Right)
+			_Myios::swap(_Right);
+		}
+ #endif /* _HAS_RVALUE_REFERENCES */
+
+	virtual ~basic_iostream()
+		{	// destroy the object
+		}
+	};
+
+	// basic_iostream TEMPLATE OPERATORS
+template<class _Elem,
+	class _Traits> inline
+	void swap(basic_iostream<_Elem, _Traits>& _Left,
+		basic_iostream<_Elem, _Traits>& _Right)
+	{	// swap _Left and _Right basic_iostreams
+	_Left.swap(_Right);
+	}
+
+		// EXTRACTORS
+export
+template<class _Elem,
+	class _Traits>
+	basic_istream<_Elem, _Traits>& operator>>(
+		basic_istream<_Elem, _Traits> _REFREF _Istr, _Elem *_Str);
+
+export
+template<class _Elem,
+	class _Traits>
+	basic_istream<_Elem, _Traits>& operator>>(
+		basic_istream<_Elem, _Traits> _REFREF _Istr, _Elem& _Ch);
+
+template<class _Traits> inline
+	basic_istream<char, _Traits>& operator>>(
+		basic_istream<char, _Traits> _REFREF _Istr, signed char *_Str)
+	{	// extract a signed char NTBS
+	return (_Istr >> (char *)_Str);
+	}
+
+template<class _Traits> inline
+	basic_istream<char, _Traits>& operator>>(
+		basic_istream<char, _Traits> _REFREF _Istr, signed char& _Ch)
+	{	// extract a signed char
+	return (_Istr >> (char&)_Ch);
+	}
+
+template<class _Traits> inline
+	basic_istream<char, _Traits>& operator>>(
+		basic_istream<char, _Traits> _REFREF _Istr, unsigned char *_Str)
+	{	// extract an unsigned char NTBS
+	return (_Istr >> (char *)_Str);
+	}
+
+template<class _Traits> inline
+	basic_istream<char, _Traits>& operator>>(
+		basic_istream<char, _Traits> _REFREF _Istr, unsigned char& _Ch)
+	{	// extract an unsigned char
+	return (_Istr >> (char&)_Ch);
+	}
+
+ #if _HAS_NEW_RVALUE_REFERENCES
+template<class _Elem,
+	class _Traits> inline
+	basic_istream<_Elem, _Traits>& operator>>(
+		basic_istream<_Elem, _Traits>& _Istr, _Elem *_Str)
+	{	// extract NTBS
+	return (_STD move(_Istr) >> _Str);
+	}
+
+template<class _Elem,
+	class _Traits> inline
+	basic_istream<_Elem, _Traits>& operator>>(
+		basic_istream<_Elem, _Traits>& _Istr, _Elem& _Ch)
+	{	// extract a character
+	return (_STD move(_Istr) >> _Ch);
+	}
+
+template<class _Traits> inline
+	basic_istream<char, _Traits>& operator>>(
+		basic_istream<char, _Traits>& _Istr, signed char *_Str)
+	{	// extract a signed char NTBS
+	return (_STD move(_Istr) >> (char *)_Str);
+	}
+
+template<class _Traits> inline
+	basic_istream<char, _Traits>& operator>>(
+		basic_istream<char, _Traits>& _Istr, signed char& _Ch)
+	{	// extract a signed char
+	return (_STD move(_Istr) >> (char&)_Ch);
+	}
+
+template<class _Traits> inline
+	basic_istream<char, _Traits>& operator>>(
+		basic_istream<char, _Traits>& _Istr, unsigned char *_Str)
+	{	// extract an unsigned char NTBS
+	return (_STD move(_Istr) >> (char *)_Str);
+	}
+
+template<class _Traits> inline
+	basic_istream<char, _Traits>& operator>>(
+		basic_istream<char, _Traits>& _Istr, unsigned char& _Ch)
+	{	// extract an unsigned char
+	return (_STD move(_Istr) >> (char&)_Ch);
+	}
+
+template<class _Elem,
+	class _Traits,
+	class _Ty> inline
+	basic_istream<_Elem, _Traits>&
+		operator>>(basic_istream<_Elem, _Traits>&& _Istr, _Ty& _Val)
+	{	// extract from rvalue stream
+	return (_Istr >> _Val);
+	}
+ #endif /* _HAS_NEW_RVALUE_REFERENCES */
+
+		// MANIPULATORS
+export
+template<class _Elem,
+	class _Traits>
+	basic_istream<_Elem, _Traits>&
+		ws(basic_istream<_Elem, _Traits>& _Istr);
+_STD_END
+#endif /* _ISTREAM_ */
+
+/*
+ * Copyright (c) 1992-2010 by P.J. Plauger.  ALL RIGHTS RESERVED.
+ * Consult your license regarding permissions and restrictions.
+V5.30:0009 */
