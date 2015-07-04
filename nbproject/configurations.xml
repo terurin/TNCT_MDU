@@ -4,62 +4,65 @@
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
                    projectFiles="true">
-      <logicalFolder name="f2" displayName="Math" projectFiles="true">
-        <itemPath>dsp.h</itemPath>
-        <itemPath>between.h</itemPath>
-        <itemPath>math_basic.h</itemPath>
-        <itemPath>Q16.h</itemPath>
-        <itemPath>math_typedef.h</itemPath>
+      <logicalFolder name="f1" displayName="driver" projectFiles="true">
+        <itemPath>driver/Motor.h</itemPath>
+        <itemPath>driver/adc.h</itemPath>
+        <itemPath>driver/dma.h</itemPath>
+        <itemPath>driver/pwm.h</itemPath>
+        <itemPath>driver/uart.h</itemPath>
+        <itemPath>driver/IModule.h</itemPath>
+        <itemPath>driver/gpio.h</itemPath>
       </logicalFolder>
-      <logicalFolder name="f1" displayName="Module" projectFiles="true">
-        <itemPath>adc.h</itemPath>
-        <itemPath>pwm.h</itemPath>
-        <itemPath>uart.h</itemPath>
+      <logicalFolder name="f2" displayName="math" projectFiles="true">
+        <itemPath>math/math_basic.h</itemPath>
+        <itemPath>math/math_typedef.h</itemPath>
+        <itemPath>math/Q16.h</itemPath>
+        <itemPath>math/between.h</itemPath>
+        <itemPath>math/dsp.h</itemPath>
       </logicalFolder>
-      <logicalFolder name="f3" displayName="System" projectFiles="true">
-        <itemPath>ErrorObject.h</itemPath>
+      <logicalFolder name="f3" displayName="system" projectFiles="true">
+        <itemPath>system/startup.h</itemPath>
+        <itemPath>system/sys_config.h</itemPath>
       </logicalFolder>
-      <itemPath>startup.h</itemPath>
       <itemPath>user_config.h</itemPath>
-      <itemPath>sys_config.h</itemPath>
-      <itemPath>Motor.h</itemPath>
+      <itemPath>ErrorObject.h</itemPath>
       <itemPath>queue.h</itemPath>
+      <itemPath>const.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
                    projectFiles="true">
     </logicalFolder>
-    <logicalFolder name="f1" displayName="Reference" projectFiles="true">
-      <itemPath>D:/robocon/MDM32.X/ProjectRules.txt</itemPath>
-      <itemPath>D:/robocon/MDM32.X/md32-driver.CE3</itemPath>
-      <itemPath>D:/robocon/MDM32.X/md32.CE3</itemPath>
-    </logicalFolder>
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <logicalFolder name="f2" displayName="Math" projectFiles="true">
-        <itemPath>dsp.cpp</itemPath>
-        <itemPath>between.cpp</itemPath>
-        <itemPath>Q16.cpp</itemPath>
+      <logicalFolder name="f2" displayName="driver" projectFiles="true">
+        <itemPath>driver/Motor.cpp</itemPath>
+        <itemPath>driver/adc.cpp</itemPath>
+        <itemPath>driver/dma.cpp</itemPath>
+        <itemPath>driver/pwm.cpp</itemPath>
+        <itemPath>driver/uart.cpp</itemPath>
+        <itemPath>driver/IModule.cpp</itemPath>
+        <itemPath>driver/gpio.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="f1" displayName="Module" projectFiles="true">
-        <itemPath>adc.cpp</itemPath>
-        <itemPath>pwm.cpp</itemPath>
-        <itemPath>uart.cpp</itemPath>
+      <logicalFolder name="f1" displayName="math" projectFiles="true">
+        <itemPath>math/Q16.cpp</itemPath>
+        <itemPath>math/between.cpp</itemPath>
+        <itemPath>math/dsp.cpp</itemPath>
       </logicalFolder>
-      <logicalFolder name="f3" displayName="System" projectFiles="true">
-        <itemPath>ErrorObject.cpp</itemPath>
+      <logicalFolder name="f3" displayName="system" projectFiles="true">
+        <itemPath>system/startup.cpp</itemPath>
+        <itemPath>system/sys_config.c</itemPath>
       </logicalFolder>
-      <itemPath>startup.cpp</itemPath>
-      <itemPath>Motor.cpp</itemPath>
+      <itemPath>ErrorObject.cpp</itemPath>
+      <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
                    projectFiles="false">
       <itemPath>Makefile</itemPath>
+      <itemPath>document/ProjectRules.txt</itemPath>
     </logicalFolder>
-    <itemPath>dma.h</itemPath>
-    <itemPath>dma.cpp</itemPath>
   </logicalFolder>
   <sourceRootList>
     <Elem>.</Elem>
@@ -135,7 +138,7 @@
         <property key="false-conditionals" value="false"/>
         <property key="keep-locals" value="false"/>
         <property key="list-assembly" value="false"/>
-        <property key="list-source" value="true"/>
+        <property key="list-source" value="false"/>
         <property key="list-symbols" value="false"/>
         <property key="oXC32asm-list-to-file" value="false"/>
         <property key="omit-debug-dirs" value="false"/>
@@ -148,8 +151,7 @@
         <property key="enable-check-sections" value="false"/>
         <property key="exclude-floating-point-library" value="false"/>
         <property key="exclude-standard-libraries" value="false"/>
-        <property key="extra-lib-directories"
-                  value="C:\Program Files (x86)\Microchip\xc32\v1.34\pic32mx\include"/>
+        <property key="extra-lib-directories" value=""/>
         <property key="fill-flash-options-addr" value=""/>
         <property key="fill-flash-options-const" value=""/>
         <property key="fill-flash-options-how" value="0"/>
@@ -166,7 +168,7 @@
         <property key="map-file" value="${DISTDIR}/${PROJECTNAME}.${IMAGE_TYPE}.map"/>
         <property key="no-startup-files" value="false"/>
         <property key="oXC32ld-extra-opts" value=""/>
-        <property key="optimization-level" value="-O3"/>
+        <property key="optimization-level" value="-O1"/>
         <property key="preprocessor-macros" value=""/>
         <property key="remove-unused-sections" value="false"/>
         <property key="report-memory-usage" value="false"/>
@@ -190,7 +192,7 @@
         <property key="generate-micro-compressed-code" value="false"/>
         <property key="isolate-each-function" value="false"/>
         <property key="make-warnings-into-errors" value="false"/>
-        <property key="optimization-level" value="-Os"/>
+        <property key="optimization-level" value="-O1"/>
         <property key="place-data-into-section" value="false"/>
         <property key="post-instruction-scheduling" value="default"/>
         <property key="pre-instruction-scheduling" value="default"/>
@@ -209,20 +211,6 @@
         <property key="save-temps" value="false"/>
         <property key="wpo-lto" value="false"/>
       </C32Global>
-      <item path="Motor.h" ex="false" overriding="false">
-        <C32>
-        </C32>
-        <C32-AR>
-        </C32-AR>
-        <C32-AS>
-        </C32-AS>
-        <C32-LD>
-        </C32-LD>
-        <C32CPP>
-        </C32CPP>
-        <C32Global>
-        </C32Global>
-      </item>
       <Simulator>
         <property key="codecoverage.enabled" value="Disable"/>
         <property key="codecoverage.enableoutputtofile" value="false"/>
@@ -235,7 +223,7 @@
         <property key="oscillator.rcfrequencyunit" value="Kilo"/>
         <property key="performancedata.show" value="false"/>
         <property key="periphADC1.altscl" value="false"/>
-        <property key="periphADC1.minTacq" value="132"/>
+        <property key="periphADC1.minTacq" value=""/>
         <property key="periphADC1.tacqunits" value="microseconds"/>
         <property key="periphADC2.altscl" value="false"/>
         <property key="periphADC2.minTacq" value=""/>
